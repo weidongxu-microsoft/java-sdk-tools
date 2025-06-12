@@ -11,7 +11,7 @@ possible tools:
 
 
 User story 1:
-I want to make an existing azure service as MCP server.
+I want to make an existing service as MCP server.
 
 1. generate client to access the server using service defined swagger
 1. define MCP server using swagger. e.g. https://learn.microsoft.com/en-us/microsoft-copilot-studio/agent-extend-action-mcp
