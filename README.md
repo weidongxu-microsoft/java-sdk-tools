@@ -25,6 +25,7 @@ I want to build a hello world web application and deploy to azure
 1. create azure sdk for java quick start project
 2. tell agent what I want to build
 3. generate the code call azure java sdk
+4. Run the code and check if the web application is deployed
    
 
 
