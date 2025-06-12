@@ -20,7 +20,7 @@ I want to make an existing service as MCP server.
 2. generate MCP server stub code
 3. in each tool, use the generated client to call real server
 
-This includes tools: client code generation and mcp server code generation. It could be packaged/shipped as 'Java agent tools for AI developer'. (just a draft name, we can refine later)
+This includes tools: client code generation and mcp server code generation.  It targets on Java AI application developers. It could be packaged/shipped as 'Java agent tools for AI developer'. (just a draft name, we can refine later)
 
 User story 2:
 target user: azure sdk user
