@@ -8,6 +8,7 @@ possible tools:
 4. azure package release status  -> sdk owner
 5. azure service status check by api-version  -> sdk owner
 6. generate MCP server from swagger/tsp  -> azure/3rd party service developer
+7. check rest api repo CI error  -> sdk owner/azure service team
 
 
 User story 1:
