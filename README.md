@@ -12,6 +12,7 @@ possible tools:
 
 
 User story 1:
+target user: azure/3rd party service developer
 I want to make an existing service as MCP server.
 
 1. generate client to access the server using service defined swagger
@@ -21,6 +22,7 @@ I want to make an existing service as MCP server.
 
 
 User story 2:
+target user: azure sdk user
 I want to build a hello world web application and deploy to azure
 
 1. create azure sdk for java quick start project
