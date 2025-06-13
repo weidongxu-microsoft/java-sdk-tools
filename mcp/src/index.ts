@@ -9,6 +9,7 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from "@modelcontextprotocol/sdk/types.js";
+import { spawnAsync, execAsync, ProcessResult } from './utils/index.js';
 
 class JavaSDKToolsServer {
   private server: Server;
@@ -30,7 +31,8 @@ class JavaSDKToolsServer {
     this.setupErrorHandling();
   }
 
-  private setupErrorHandling(): void {    this.server.onerror = (error: Error) => {
+  private setupErrorHandling(): void {   
+    this.server.onerror = (error: Error) => {
       console.error("[MCP Error]", error);
     };
 
@@ -45,87 +47,17 @@ class JavaSDKToolsServer {
       return {
         tools: [
           {
-            name: "generate_client_code",
-            description: "Generate client code from OpenAPI/Swagger specification",
+            name: "generate_java_sdk",
+            description: "Generate Java SDK from configuration in tsp-location.yaml in this directory",
             inputSchema: {
               type: "object",
               properties: {
-                specUrl: {
+                cwd: {
                   type: "string",
-                  description: "URL or path to the OpenAPI/Swagger specification",
-                },
-                outputDir: {
-                  type: "string",
-                  description: "Directory to output the generated client code",
-                },
-                packageName: {
-                  type: "string",
-                  description: "Java package name for the generated client",
+                  description: "The absolute path to the directory containing tsp-location.yaml",
                 },
               },
-              required: ["specUrl", "outputDir", "packageName"],
-            },
-          },
-          {
-            name: "generate_mcp_server",
-            description: "Generate MCP server stub code from OpenAPI/Swagger specification",
-            inputSchema: {
-              type: "object",
-              properties: {
-                specUrl: {
-                  type: "string",
-                  description: "URL or path to the OpenAPI/Swagger specification",
-                },
-                outputDir: {
-                  type: "string",
-                  description: "Directory to output the generated MCP server code",
-                },
-                serverName: {
-                  type: "string",
-                  description: "Name for the MCP server",
-                },
-              },
-              required: ["specUrl", "outputDir", "serverName"],
-            },
-          },
-          {
-            name: "create_quickstart_project",
-            description: "Create an Azure SDK for Java quickstart project",
-            inputSchema: {
-              type: "object",
-              properties: {
-                projectName: {
-                  type: "string",
-                  description: "Name of the project to create",
-                },
-                outputDir: {
-                  type: "string",
-                  description: "Directory to create the project in",
-                },
-                azureService: {
-                  type: "string",
-                  description: "Azure service to integrate with (e.g., storage, cosmosdb, keyvault)",
-                },
-              },
-              required: ["projectName", "outputDir", "azureService"],
-            },
-          },
-          {
-            name: "check_service_status",
-            description: "Check Azure service status by API version",
-            inputSchema: {
-              type: "object",
-              properties: {
-                serviceName: {
-                  type: "string",
-                  description: "Name of the Azure service",
-                },
-                apiVersion: {
-                  type: "string",
-                  description: "API version to check",
-                },
-              },
-              required: ["serviceName", "apiVersion"],
+              required: ["cwd"],
             },
           },
         ],
@@ -137,14 +69,8 @@ class JavaSDKToolsServer {
 
       try {
         switch (name) {
-          case "generate_client_code":
-            return await this.generateClientCode(args);
-          case "generate_mcp_server":
-            return await this.generateMcpServer(args);
-          case "create_quickstart_project":
-            return await this.createQuickstartProject(args);
-          case "check_service_status":
-            return await this.checkServiceStatus(args);
+          case "generate_java_sdk":
+            return await this.generateJavaSdk(args);
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
@@ -159,133 +85,57 @@ class JavaSDKToolsServer {
       }
     });
   }
+  private async generateJavaSdk(args: any) {
+    const { cwd } = args;
+    try {
+      process.chdir(cwd);
 
-  private async generateClientCode(args: any) {
-    const { specUrl, outputDir, packageName } = args;
+      // Run the Java SDK generation command
+      const generateResult = await spawnAsync('tsp-client', ['update', '--debug'], {
+        cwd: process.cwd(),
+        shell: true, // Use shell to allow tsp-client command
+        timeout: 600000 // 10 minute timeout
+      });
 
-    // Placeholder implementation - would integrate with actual code generation tools
-    const result = `Generated Java client code from ${specUrl}
-Output directory: ${outputDir}
-Package name: ${packageName}
+      let result = `Java SDK Generation Results:\n\n`;
+      
+      if (generateResult.success) {
+        result += `✅ SDK generation completed successfully!\n\n`;
+        result += `Output:\n${generateResult.stdout}\n`;
+        
+        if (generateResult.stderr) {
+          result += `\nWarnings/Info:\n${generateResult.stderr}\n`;
+        }
+      } else {
+        result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
+        
+        if (generateResult.stdout) {
+          result += `Output:\n${generateResult.stdout}\n`;
+        }
+        
+        if (generateResult.stderr) {
+          result += `\nErrors:\n${generateResult.stderr}\n`;
+        }
+      }
 
-Steps performed:
-1. Downloaded OpenAPI specification from ${specUrl}
-2. Validated specification format
-3. Generated Java client classes with package ${packageName}
-4. Created model classes for request/response objects
-5. Generated service interfaces and implementations
-6. Added necessary dependencies to pom.xml
-
-Generated files:
-- ${outputDir}/src/main/java/${packageName.replace(/\./g, '/')}/client/
-- ${outputDir}/src/main/java/${packageName.replace(/\./g, '/')}/models/
-- ${outputDir}/pom.xml`;
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: result,
-        },
-      ],
-    };
-  }
-
-  private async generateMcpServer(args: any) {
-    const { specUrl, outputDir, serverName } = args;
-
-    // Placeholder implementation
-    const result = `Generated MCP server from ${specUrl}
-Server name: ${serverName}
-Output directory: ${outputDir}
-
-Steps performed:
-1. Analyzed OpenAPI specification from ${specUrl}
-2. Generated MCP server stub with tool definitions
-3. Created service client integration
-4. Generated TypeScript/JavaScript MCP server code
-5. Added proper MCP protocol handling
-
-Generated files:
-- ${outputDir}/src/index.ts (main server file)
-- ${outputDir}/src/tools.ts (tool implementations)
-- ${outputDir}/src/client.ts (service client wrapper)
-- ${outputDir}/package.json
-- ${outputDir}/tsconfig.json`;
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: result,
-        },
-      ],
-    };
-  }
-
-  private async createQuickstartProject(args: any) {
-    const { projectName, outputDir, azureService } = args;
-
-    // Placeholder implementation
-    const result = `Created Azure SDK for Java quickstart project
-Project name: ${projectName}
-Azure service: ${azureService}
-Output directory: ${outputDir}
-
-Steps performed:
-1. Created Maven project structure
-2. Added Azure SDK dependencies for ${azureService}
-3. Generated sample code for ${azureService} operations
-4. Created configuration files
-5. Added authentication setup
-6. Generated README with deployment instructions
-
-Generated files:
-- ${outputDir}/${projectName}/src/main/java/com/example/App.java
-- ${outputDir}/${projectName}/pom.xml
-- ${outputDir}/${projectName}/README.md
-- ${outputDir}/${projectName}/src/main/resources/application.properties`;
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: result,
-        },
-      ],
-    };
-  }
-
-  private async checkServiceStatus(args: any) {
-    const { serviceName, apiVersion } = args;
-
-    // Placeholder implementation
-    const result = `Service Status Check Results
-Service: ${serviceName}
-API Version: ${apiVersion}
-
-Status: ✅ Active
-Last Updated: ${new Date().toISOString()}
-Health: Good
-Response Time: 250ms
-
-API Endpoints Status:
-- GET /api/${apiVersion}/status: ✅ Available
-- POST /api/${apiVersion}/operations: ✅ Available
-- PUT /api/${apiVersion}/resources: ✅ Available
-- DELETE /api/${apiVersion}/resources: ✅ Available
-
-Recent Issues: None reported
-Next Scheduled Maintenance: None scheduled`;
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: result,
-        },
-      ],
-    };
+      return {
+        content: [
+          {
+            type: "text",
+            text: result,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Unexpected error during SDK generation: ${error instanceof Error ? error.message : String(error)}`,
+          },
+        ],
+      };
+    }
   }
 
   async run(): Promise<void> {

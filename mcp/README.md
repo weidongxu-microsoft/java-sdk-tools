@@ -6,10 +6,7 @@ A Model Context Protocol (MCP) server that provides tools for Java SDK developme
 
 This MCP server provides the following tools:
 
-1. **generate_client_code** - Generate Java client code from OpenAPI/Swagger specifications
-2. **generate_mcp_server** - Generate MCP server stub code from OpenAPI/Swagger specifications  
-3. **create_quickstart_project** - Create Azure SDK for Java quickstart projects
-4. **check_service_status** - Check Azure service status by API version
+1. **generate_java_sdk** - Generate Java SDK
 
 ## Installation
 
