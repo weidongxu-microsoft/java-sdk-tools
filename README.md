@@ -35,4 +35,19 @@ I want to build a hello world web application and deploy to azure
    
 This includes tools: vibe coding, init quick start proj. 
 
+User story 3: 
 
+target user: service dev.
+
+I want to create SDK for my service
+
+1. assume service dev had a generated Java SDK in their branch
+2. assume they had some feedback from architect, for simplicity we assume request to rename API or model or property
+(we can insert harder task here)
+3. service dev ask agent in vscode to update the typespec (limit to client.tsp for now) to handle the ask
+4. agent update the local client.tsp in temp folder (we may need Java MCP give a cookbook in this step)
+5. agent re-generate SDK from the updated local tsp (`--save-inputs` option)
+6. agent verify that the change is expected, go back to step 4 if not <-- this step should be all on agent
+
+Step 4 and 5 would depends on Java MCP
+(step 4: currently I am not sure whether we can reliably get agent call us for the cookbook -- or the agent may be capable enough to handle this without input from MCP)
