@@ -49,6 +49,20 @@ class JavaSDKToolsServer {
       return {
         tools: [
           {
+            name: "update_java_sdk",
+            description: "Update the source and generate Java SDK from configuration in tsp-location.yaml in this directory",
+            inputSchema: {
+              type: "object",
+              properties: {
+                cwd: {
+                  type: "string",
+                  description: "The absolute path to the directory containing tsp-location.yaml",
+                },
+              },
+              required: ["cwd"],
+            },
+          },
+          {
             name: "generate_java_sdk",
             description: "Generate Java SDK from configuration in tsp-location.yaml in this directory",
             inputSchema: {
@@ -88,27 +102,6 @@ class JavaSDKToolsServer {
       const { name, arguments: args } = request.params;
 
       try {
-        switch (name) {
-          case "generate_java_sdk":
-            return await this.generateJavaSdk(args);
-          default:
-            throw new McpError(
-              ErrorCode.MethodNotFound,
-              `Unknown tool: ${name}`
-            );
-        }
-      } catch (error) {
-        throw new McpError(
-          ErrorCode.InternalError,
-          `Error executing tool ${name}: ${error}`
-        );
-      }
-    });
-
-    this.server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
-      const { name, arguments: args } = request.params;
-
-      try {
         const logMsg = `[${new Date().toISOString()}] [MCP] Tool called: ${name}\n`;
         // Write to log file
         try {
@@ -122,8 +115,12 @@ class JavaSDKToolsServer {
         process.stderr.write(logMsg);
 
         switch (name) {
+          case "update_java_sdk":
+            return await this.generateJavaSdk(args ?? {}, false);
+
           case "generate_java_sdk":
-            return await this.generateJavaSdk(args ?? {});
+            return await this.generateJavaSdk(args ?? {}, true);
+
           case "client_name_update_cookbook": {
             const safeArgs = args ?? {};
             if (typeof safeArgs.oldName !== "string" || typeof safeArgs.newName !== "string") {
@@ -148,13 +145,13 @@ class JavaSDKToolsServer {
       }
     });
   }
-  private async generateJavaSdk(args: any) {
+  private async generateJavaSdk(args: any, isGenerate: boolean = true) {
     const { cwd } = args;
     try {
       process.chdir(cwd);
 
       // Run the Java SDK generation command
-      const generateResult = await spawnAsync('tsp-client', ['update', '--debug', '--save-inputs'], {
+      const generateResult = await spawnAsync('tsp-client', [isGenerate ? 'generate' : 'update', '--debug', '--save-inputs'], {
         cwd: process.cwd(),
         shell: true, // Use shell to allow tsp-client command
         timeout: 600000 // 10 minute timeout
@@ -207,7 +204,11 @@ class JavaSDKToolsServer {
 
 # How to Update the Client Name in the Generated Java SDK
 
-1. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with ${oldName}**
+1. **Update the source and Generate the Java SDK**
+
+   Find the directory in the workspace that contains 'tsp-location.yaml'. Update the source andGenerate the Java SDK.
+
+2. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with ${oldName}**
 
    Look for the model or operation you want to rename under '.tsp' files. Get the path of the model or operation. For example, model \`OldModelName\`'s path is 'Azure.Communication.MessagesService.OldModelName', operation 'sendMessage''s path is 'Azure.Communication.MessagesService.AdminOperations.sendMessage'.
    \`\`\`typespec
@@ -223,7 +224,6 @@ class JavaSDKToolsServer {
     }
    \`\`\`
 
-
 3. **Update client.tsp**
 
    Use and founded path and @clientName decorator to update the client name to ${newName}. 
@@ -236,9 +236,9 @@ class JavaSDKToolsServer {
   );
    \`\`\`
 
-5. **Regenerate the SDK**
+5. **Generate the Java SDK**
 
-   Find the directory in the workspace that contains 'tsp-location.yaml'. Run your SDK generation command\`tsp-client generate\` in this directory to regenerate the Java SDK with the updated model name.
+   Find the directory in the workspace that contains 'tsp-location.yaml'. Generate the Java SDK.
 
 6. **Update Downstream Code**
 
