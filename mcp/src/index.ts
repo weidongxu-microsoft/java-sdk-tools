@@ -9,7 +9,8 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from "@modelcontextprotocol/sdk/types.js";
-import { spawnAsync, execAsync, ProcessResult } from './utils/index.js';
+import { generateJavaSdk } from "./generate-java-sdk.js";
+import { clientNameUpdateCookbook } from "./client-name-update.js";
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -116,10 +117,10 @@ class JavaSDKToolsServer {
 
         switch (name) {
           case "update_java_sdk":
-            return await this.generateJavaSdk(args ?? {}, false);
+            return await generateJavaSdk(args ?? {}, false);
 
           case "generate_java_sdk":
-            return await this.generateJavaSdk(args ?? {}, true);
+            return await generateJavaSdk(args ?? {}, true);
 
           case "client_name_update_cookbook": {
             const safeArgs = args ?? {};
@@ -129,7 +130,7 @@ class JavaSDKToolsServer {
                 `Both 'oldName' and 'newName' parameters must be provided as strings.`
               );
             }
-            return await this.clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
+            return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
           }
           default:
             throw new McpError(
@@ -144,121 +145,6 @@ class JavaSDKToolsServer {
         );
       }
     });
-  }
-  private async generateJavaSdk(args: any, isGenerate: boolean = true) {
-    const { cwd } = args;
-    try {
-      process.chdir(cwd);
-
-      // Run the Java SDK generation command
-      const generateResult = await spawnAsync('tsp-client', [isGenerate ? 'generate' : 'update', '--debug', '--save-inputs'], {
-        cwd: process.cwd(),
-        shell: true, // Use shell to allow tsp-client command
-        timeout: 600000 // 10 minute timeout
-      });
-
-      let result = `Java SDK Generation Results:\n\n`;
-      
-      if (generateResult.success) {
-        result += `✅ SDK generation completed successfully!\n\n`;
-        result += `Output:\n${generateResult.stdout}\n`;
-        
-        if (generateResult.stderr) {
-          result += `\nWarnings/Info:\n${generateResult.stderr}\n`;
-        }
-      } else {
-        result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
-        
-        if (generateResult.stdout) {
-          result += `Output:\n${generateResult.stdout}\n`;
-        }
-        
-        if (generateResult.stderr) {
-          result += `\nErrors:\n${generateResult.stderr}\n`;
-        }
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: result,
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Unexpected error during SDK generation: ${error instanceof Error ? error.message : String(error)}`,
-          },
-        ],
-      };
-    }
-  }
-
- private async clientNameUpdateCookbook(oldName: string, newName: string) {
-    const cookbook = `
-    Follow below instruction to update old client name to new client name in both client.tsp and the generated Java SDK.
-
-# How to Update the Client Name in the Generated Java SDK
-
-1. **Update the source and Generate the Java SDK**
-
-   Find the directory in the workspace that contains 'tsp-location.yaml'. Update the source andGenerate the Java SDK.
-
-2. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with ${oldName}**
-
-   Look for the model or operation you want to rename under '.tsp' files. Get the path of the model or operation. For example, model \`OldModelName\`'s path is 'Azure.Communication.MessagesService.OldModelName', operation 'sendMessage''s path is 'Azure.Communication.MessagesService.AdminOperations.sendMessage'.
-   \`\`\`typespec
-   namespace Azure.Communication.MessagesService;
-
-   model OldModelName {
-    // model properties
-   }
-
-   interface AdminOperations {
-      @path("/messages")
-      operation sendMessage(@body message: OldModelName): void;
-    }
-   \`\`\`
-
-3. **Update client.tsp**
-
-   Use and founded path and @clientName decorator to update the client name to ${newName}. 
-   For example, for model \`OldModelName\`, you can add below line to \`NewModelName\` to client.tsp like this. Update operation name or operation parameter name are similar.
-   \`\`\`typespec
-   
-  @@clientName(Azure.Communication.MessagesService.OldModelName,
-    "NewModelName",
-    "java"
-  );
-   \`\`\`
-
-5. **Generate the Java SDK**
-
-   Find the directory in the workspace that contains 'tsp-location.yaml'. Generate the Java SDK.
-
-6. **Update Downstream Code**
-
-   If you have already generated code or documentation that references the old model name, update those references as well.
-
----
-
-**Tip:** Use your IDE’s “rename symbol” or “find and replace” feature to ensure you update all references safely.
-    `;
-
-    console.error(`Generated client name update cookbook:\n${cookbook}`);
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: cookbook,
-        },
-      ],
-    };
   }
 
   async run(): Promise<void> {
