@@ -95,6 +95,24 @@ class JavaSDKToolsServer {
               required: ["oldName", "newName"],
             },
           },
+          {
+            name: "commit_typespec_changes_instructions",
+            description: "follow the returned instructions to commit TypeSpec changes using git. Ask for the optional lcoal absolute path to the azure-rest-api-spec project and set it to parameter 'specRepoPath'. If no local project, ask user to provide the directory to clone azure-rest-api-spec project, set it to parameter 'cloneWorkspace'.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                specRepoPath: {
+                  type: "string",
+                  description: "The absolute path to the TypeSpec repository where changes should be committed."
+                },
+                cloneWorkspace: {
+                  type: "string",
+                  description: "The absolute path to the workspace path to clone TypeSpec repository."
+                }
+              },
+              required: [],
+            },
+          },
         ],
       };
     });
@@ -131,6 +149,10 @@ class JavaSDKToolsServer {
               );
             }
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
+          }
+          case "commit_typespec_changes_instructions": {
+            const repoPath = args && typeof args.specRepoPath === "string" && args.specRepoPath.trim() !== "" ? args.specRepoPath : process.cwd();
+            return await this.commitTypespecChangesInstructions({ specRepoPath: repoPath });
           }
           default:
             throw new McpError(
