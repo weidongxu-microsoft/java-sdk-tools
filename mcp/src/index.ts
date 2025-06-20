@@ -9,10 +9,12 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from "@modelcontextprotocol/sdk/types.js";
-import { generateJavaSdk } from "./generate-java-sdk.js";
-import { clientNameUpdateCookbook } from "./client-name-update.js";
 import * as fs from 'fs';
 import * as path from 'path';
+import { generateJavaSdk } from "./generate-java-sdk.js";
+import { clientNameUpdateCookbook } from "./client-name-update.js";
+import { brownfieldMigration } from "./brownfield-migrate.js";
+import { initJavaSdk } from "./init-java-sdk.js";
 
 class JavaSDKToolsServer {
   private server: Server;
@@ -26,11 +28,13 @@ class JavaSDKToolsServer {
       {
         capabilities: {
           tools: {},
+          // prompts: {},
         },
       }
     );
 
     this.setupToolHandlers();
+    this.setupPromptHandlers();
     this.setupErrorHandling();
   }
 
@@ -45,10 +49,38 @@ class JavaSDKToolsServer {
     });
   }
 
+  private setupPromptHandlers(): void {
+    // it is really are prompt for agent that user can choose
+    // we currently do not use them, but maybe useful if agent cannot automatically find the instruction in our tools
+  }
+
   private setupToolHandlers(): void {
+    // Setup tool handlers
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
+          {
+            name: "init_java_sdk",
+            description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
+            inputSchema: {
+              type: "object",
+              properties: {
+                cwd: {
+                  type: "string",
+                  description: "The absolute path to the directory of the workspace root",
+                },
+                tspConfigUrl: {
+                  type: "string",
+                  description: "The URL to the tspconfig.yaml file",
+                },
+              },
+              required: ["cwd", "tspConfigUrl"],
+            },
+          },
+          {
+            name: "instruction_migrate_typespec",
+            description: "The instructions for migrating Java SDK to generate from TypeSpec",
+          },
           {
             name: "update_java_sdk",
             description: "Update the source and generate Java SDK from configuration in tsp-location.yaml in this directory",
@@ -116,6 +148,12 @@ class JavaSDKToolsServer {
         process.stderr.write(logMsg);
 
         switch (name) {
+          case "init_java_sdk":
+            return await initJavaSdk(args ?? {});
+
+          case "instruction_migrate_typespec":
+            return await brownfieldMigration();
+
           case "update_java_sdk":
             return await generateJavaSdk(args ?? {}, false);
 
