@@ -136,10 +136,10 @@ class JavaSDKToolsServer {
 
         switch (name) {
           case "sync_java_sdk":
-            return await generateJavaSdk(args ?? {});
+            return await generateJavaSdk(args ?? {}, false);
 
           case "generate_java_sdk":
-            return await generateJavaSdk(args ?? {});
+            return await generateJavaSdk(args ?? {}, true);
 
           case "update_client_name": {
             const safeArgs = args ?? {};
