@@ -13,7 +13,6 @@ import { generateJavaSdk } from "./generate-java-sdk.js";
 import { clientNameUpdateCookbook } from "./client-name-update.js";
 import * as fs from 'fs';
 import * as path from 'path';
-import { saveTypeSpecChanges } from "./save-typespec-changes.js";
 
 class JavaSDKToolsServer {
   private server: Server;
@@ -96,24 +95,6 @@ class JavaSDKToolsServer {
               required: ["oldName", "newName"],
             },
           },
-          {
-            name: "save_typespec_changes",
-            description: "Follow the returned instructions to save TypeSpec changes. Be sure to ask for the local absolute path to the azure-rest-api-specs project, pass it to property 'specRepoPath'. If no local project path, ask to provide a directory to clone the repo, pass it to property 'cloneWorkspace'.",
-            inputSchema: {
-              type: "object",
-              properties: {
-                specRepoPath: {
-                  type: "string",
-                  description: "The absolute path to the TypeSpec repository where changes should be committed."
-                },
-                cloneWorkspace: {
-                  type: "string",
-                  description: "The absolute path to the directory where the azure-rest-api-specs repository should be cloned if not present."
-                }
-              },
-              required: [],
-            },
-          },
         ],
       };
     });
@@ -152,12 +133,6 @@ class JavaSDKToolsServer {
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
           }
 
-          case "save_typespec_changes": {
-            // Pass both parameters, both are optional
-            const specRepoPath = args && typeof args.specRepoPath === "string" && args.specRepoPath.trim() !== "" ? args.specRepoPath : undefined;
-            const cloneWorkspace = args && typeof args.cloneWorkspace === "string" && args.cloneWorkspace.trim() !== "" ? args.cloneWorkspace : undefined;
-            return await saveTypeSpecChanges({ specRepoPath, cloneWorkspace });
-          }
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
