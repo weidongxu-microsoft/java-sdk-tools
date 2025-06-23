@@ -4,9 +4,9 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 
 # How to Update the Client Name in the Generated Java SDK
 
-1. **Update the source and Generate the Java SDK**
+1. **Synchronize the TypeSpec source for Java SDK**
 
-  Find the directory in the workspace that contains 'tsp-location.yaml'. Update the source andGenerate the Java SDK.
+  Find the directory in the workspace that contains 'tsp-location.yaml'. Use the tool to synchronize the TypeSpec source for the Java SDK.
 
 2. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with ${oldName}**
 
@@ -38,7 +38,7 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 
 5. **Generate the Java SDK**
 
-  Find the directory in the workspace that contains 'tsp-location.yaml'. Generate the Java SDK.
+  Find the directory in the workspace that contains 'tsp-location.yaml'. Use the tool to generate the Java SDK.
 
 6. **Update Downstream Code**
 
