@@ -13,6 +13,7 @@ import { generateJavaSdk } from "./generate-java-sdk.js";
 import { clientNameUpdateCookbook } from "./client-name-update.js";
 import * as fs from 'fs';
 import * as path from 'path';
+import { saveTypeSpecChanges } from "./save-typespec-changes.js";
 
 class JavaSDKToolsServer {
   private server: Server;
@@ -51,7 +52,7 @@ class JavaSDKToolsServer {
         tools: [
           {
             name: "sync_java_sdk",
-            description: "Synchronize the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
+            description: "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
             inputSchema: {
               type: "object",
               properties: {
@@ -65,7 +66,7 @@ class JavaSDKToolsServer {
           },
           {
             name: "generate_java_sdk",
-            description: "Generate Java SDK, from configuration in tsp-location.yaml",
+            description: "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
             inputSchema: {
               type: "object",
               properties: {
@@ -78,8 +79,8 @@ class JavaSDKToolsServer {
             },
           },
           {
-            name: "client_name_update_cookbook",
-            description: "follow the returned instruction to update old client name to new client name in both client.tsp and the generated Java SDK, be sure to ask for old client name and new client name",
+            name: "update_client_name",
+            description: "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
             inputSchema: {
               type: "object",
               properties: {
@@ -96,8 +97,8 @@ class JavaSDKToolsServer {
             },
           },
           {
-            name: "commit_typespec_changes_instructions",
-            description: "follow the returned instructions to commit TypeSpec changes using git. Ask for the optional lcoal absolute path to the azure-rest-api-spec project and set it to parameter 'specRepoPath'. If no local project, ask user to provide the directory to clone azure-rest-api-spec project, set it to parameter 'cloneWorkspace'.",
+            name: "save_typespec_changes",
+            description: "Follow the returned instructions to save TypeSpec changes. Be sure to ask for the local absolute path to the azure-rest-api-specs project, pass it to property 'specRepoPath'. If no local project path, ask to provide a directory to clone the repo, pass it to property 'cloneWorkspace'.",
             inputSchema: {
               type: "object",
               properties: {
@@ -107,7 +108,7 @@ class JavaSDKToolsServer {
                 },
                 cloneWorkspace: {
                   type: "string",
-                  description: "The absolute path to the workspace path to clone TypeSpec repository."
+                  description: "The absolute path to the directory where the azure-rest-api-specs repository should be cloned if not present."
                 }
               },
               required: [],
@@ -135,12 +136,12 @@ class JavaSDKToolsServer {
 
         switch (name) {
           case "sync_java_sdk":
-            return await generateJavaSdk(args ?? {}, false);
+            return await generateJavaSdk(args ?? {});
 
           case "generate_java_sdk":
-            return await generateJavaSdk(args ?? {}, true);
+            return await generateJavaSdk(args ?? {});
 
-          case "client_name_update_cookbook": {
+          case "update_client_name": {
             const safeArgs = args ?? {};
             if (typeof safeArgs.oldName !== "string" || typeof safeArgs.newName !== "string") {
               throw new McpError(
@@ -150,9 +151,12 @@ class JavaSDKToolsServer {
             }
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
           }
-          case "commit_typespec_changes_instructions": {
-            const repoPath = args && typeof args.specRepoPath === "string" && args.specRepoPath.trim() !== "" ? args.specRepoPath : process.cwd();
-            return await this.commitTypespecChangesInstructions({ specRepoPath: repoPath });
+
+          case "save_typespec_changes": {
+            // Pass both parameters, both are optional
+            const specRepoPath = args && typeof args.specRepoPath === "string" && args.specRepoPath.trim() !== "" ? args.specRepoPath : undefined;
+            const cloneWorkspace = args && typeof args.cloneWorkspace === "string" && args.cloneWorkspace.trim() !== "" ? args.cloneWorkspace : undefined;
+            return await saveTypeSpecChanges({ specRepoPath, cloneWorkspace });
           }
           default:
             throw new McpError(
