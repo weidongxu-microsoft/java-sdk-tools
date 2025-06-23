@@ -55,12 +55,12 @@ class JavaSDKToolsServer {
             inputSchema: {
               type: "object",
               properties: {
-                cwd: {
+                tspLocationPath: {
                   type: "string",
-                  description: "The absolute path to the directory containing tsp-location.yaml",
+                  description: "The absolute path to the tsp-location.yaml file",
                 },
               },
-              required: ["cwd"],
+              required: ["tspLocationPath"],
             },
           },
           {
@@ -69,12 +69,12 @@ class JavaSDKToolsServer {
             inputSchema: {
               type: "object",
               properties: {
-                cwd: {
+                tspLocationPath: {
                   type: "string",
-                  description: "The absolute path to the directory containing tsp-location.yaml",
+                  description: "The absolute path to the tsp-location.yaml file",
                 },
               },
-              required: ["cwd"],
+              required: ["tspLocationPath"],
             },
           },
           {

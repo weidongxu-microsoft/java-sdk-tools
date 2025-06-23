@@ -1,9 +1,11 @@
+import path from 'path';
 import { spawnAsync } from './utils/index.js';
 
 export async function generateJavaSdk(args: any, isGenerate: boolean = true): Promise<any> {
-  const { cwd } = args;
+  const { tspLocationPath } = args;
   try {
-    process.chdir(cwd);
+    const tspLocationDir = path.dirname(tspLocationPath);
+    process.chdir(tspLocationDir);
 
     // Run the Java SDK generation command
     const generateResult = await spawnAsync('tsp-client', [isGenerate ? 'generate' : 'update', '--debug', '--save-inputs'], {
