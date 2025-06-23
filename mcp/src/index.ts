@@ -50,8 +50,8 @@ class JavaSDKToolsServer {
       return {
         tools: [
           {
-            name: "update_java_sdk",
-            description: "Update the source and generate Java SDK from configuration in tsp-location.yaml in this directory",
+            name: "sync_java_sdk",
+            description: "Synchronize the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
             inputSchema: {
               type: "object",
               properties: {
@@ -65,7 +65,7 @@ class JavaSDKToolsServer {
           },
           {
             name: "generate_java_sdk",
-            description: "Generate Java SDK from configuration in tsp-location.yaml in this directory",
+            description: "Generate Java SDK, from configuration in tsp-location.yaml",
             inputSchema: {
               type: "object",
               properties: {
@@ -116,7 +116,7 @@ class JavaSDKToolsServer {
         process.stderr.write(logMsg);
 
         switch (name) {
-          case "update_java_sdk":
+          case "sync_java_sdk":
             return await generateJavaSdk(args ?? {}, false);
 
           case "generate_java_sdk":
