@@ -6,7 +6,7 @@ export async function generateJavaSdk(args: any, isGenerate: boolean = true): Pr
     process.chdir(cwd);
 
     // Run the Java SDK generation command
-    const generateResult = await spawnAsync('tsp-client', [isGenerate ? 'generate' : 'sync', '--debug', '--save-inputs'], {
+    const generateResult = await spawnAsync('tsp-client', [isGenerate ? 'generate' : 'update', '--debug', '--save-inputs'], {
       cwd: process.cwd(),
       shell: true, // Use shell to allow tsp-client command
       timeout: 600000 // 10 minute timeout
