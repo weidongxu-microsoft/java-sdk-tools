@@ -6,7 +6,7 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 
 1. **Synchronize the TypeSpec source for Java SDK**
 
-  Find the directory in the workspace that contains 'tsp-location.yaml'. Use the tool to synchronize the TypeSpec source for the Java SDK.
+  Check if there is already a directory named 'TempTypeSpecFiles'. If there is not, find the directory in the workspace that contains 'tsp-location.yaml'. Use the tool to synchronize the TypeSpec source for the Java SDK.
 
 2. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with ${oldName}**
 
@@ -26,7 +26,7 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 
 3. **Update client.tsp**
 
-  Use and founded path and @clientName decorator to update the client name to ${newName}. 
+  Use and founded path and @clientName decorator to update the client name to ${newName}. Make sure you only update client.tsp file, other .tsp files should not be updated.
   For example, for model \`OldModelName\`, you can add below line to \`NewModelName\` to client.tsp like this. Update operation name or operation parameter name are similar.
   \`\`\`typespec
   
@@ -36,6 +36,8 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 );
   \`\`\`
 
+4. Print a .diff file in current working directory on what you have changed in the client.tsp file.
+
 5. **Generate the Java SDK**
 
   Find the directory in the workspace that contains 'tsp-location.yaml'. Use the tool to generate the Java SDK.
@@ -43,6 +45,8 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 6. **Update Downstream Code**
 
   If you have already generated code or documentation that references the old model name, update those references as well.
+
+7. Open the .diff file you created. Ask the user to commit the changes on client.tsp file and the generated Java SDK.
 
 ---
 

@@ -51,35 +51,35 @@ class JavaSDKToolsServer {
         tools: [
           {
             name: "sync_java_sdk",
-            description: "Synchronize the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
+            description: "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
             inputSchema: {
               type: "object",
               properties: {
-                tspLocationPath: {
+                cwd: {
                   type: "string",
-                  description: "The absolute path to the tsp-location.yaml file",
+                  description: "The absolute path to the directory containing tsp-location.yaml",
                 },
               },
-              required: ["tspLocationPath"],
+              required: ["cwd"],
             },
           },
           {
             name: "generate_java_sdk",
-            description: "Generate Java SDK, from configuration in tsp-location.yaml",
+            description: "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
             inputSchema: {
               type: "object",
               properties: {
-                tspLocationPath: {
+                cwd: {
                   type: "string",
-                  description: "The absolute path to the tsp-location.yaml file",
+                  description: "The absolute path to the directory containing tsp-location.yaml",
                 },
               },
-              required: ["tspLocationPath"],
+              required: ["cwd"],
             },
           },
           {
-            name: "client_name_update_cookbook",
-            description: "follow the returned instruction to update old client name to new client name in both client.tsp and the generated Java SDK, be sure to ask for old client name and new client name",
+            name: "update_client_name",
+            description: "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
             inputSchema: {
               type: "object",
               properties: {
@@ -122,7 +122,7 @@ class JavaSDKToolsServer {
           case "generate_java_sdk":
             return await generateJavaSdk(args ?? {}, true);
 
-          case "client_name_update_cookbook": {
+          case "update_client_name": {
             const safeArgs = args ?? {};
             if (typeof safeArgs.oldName !== "string" || typeof safeArgs.newName !== "string") {
               throw new McpError(
@@ -132,6 +132,7 @@ class JavaSDKToolsServer {
             }
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
           }
+
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
