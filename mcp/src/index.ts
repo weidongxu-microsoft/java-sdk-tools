@@ -82,8 +82,8 @@ class JavaSDKToolsServer {
             description: "The instructions for migrating Java SDK to generate from TypeSpec",
           },
           {
-            name: "update_java_sdk",
-            description: "Update the source and generate Java SDK from configuration in tsp-location.yaml in this directory",
+            name: "sync_java_sdk",
+            description: "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
             inputSchema: {
               type: "object",
               properties: {
@@ -97,7 +97,7 @@ class JavaSDKToolsServer {
           },
           {
             name: "generate_java_sdk",
-            description: "Generate Java SDK from configuration in tsp-location.yaml in this directory",
+            description: "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
             inputSchema: {
               type: "object",
               properties: {
@@ -110,8 +110,8 @@ class JavaSDKToolsServer {
             },
           },
           {
-            name: "client_name_update_cookbook",
-            description: "follow the returned instruction to update old client name to new client name in both client.tsp and the generated Java SDK, be sure to ask for old client name and new client name",
+            name: "update_client_name",
+            description: "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
             inputSchema: {
               type: "object",
               properties: {
@@ -154,13 +154,13 @@ class JavaSDKToolsServer {
           case "instruction_migrate_typespec":
             return await brownfieldMigration();
 
-          case "update_java_sdk":
+          case "sync_java_sdk":
             return await generateJavaSdk(args ?? {}, false);
 
           case "generate_java_sdk":
             return await generateJavaSdk(args ?? {}, true);
 
-          case "client_name_update_cookbook": {
+          case "update_client_name": {
             const safeArgs = args ?? {};
             if (typeof safeArgs.oldName !== "string" || typeof safeArgs.newName !== "string") {
               throw new McpError(
@@ -170,6 +170,7 @@ class JavaSDKToolsServer {
             }
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
           }
+
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
