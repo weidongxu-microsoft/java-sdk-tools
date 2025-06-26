@@ -11,6 +11,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { generateJavaSdk } from "./generate-java-sdk.js";
 import { clientNameUpdateCookbook } from "./client-name-update.js";
+import { prepareJavaSdkEnvironmentCookbook } from "./prepare-environment.js";
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -94,6 +95,19 @@ class JavaSDKToolsServer {
               },
               required: ["oldName", "newName"],
             },
+          },          {
+            name: "prepare_java_sdk_environment",
+            description: "Get step-by-step instructions to prepare the environment for Java SDK generation, including setting up directories, dependencies, and configuration files",
+            inputSchema: {
+              type: "object",
+              properties: {
+                cwd: {
+                  type: "string",
+                  description: "The absolute path to the working directory where the environment should be prepared",
+                }
+              },
+              required: ["cwd"],
+            },
           },
         ],
       };
@@ -131,6 +145,15 @@ class JavaSDKToolsServer {
               );
             }
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
+          }          case "prepare_java_sdk_environment": {
+            const safeArgs = args ?? {};
+            if (typeof safeArgs.cwd !== "string") {
+              throw new McpError(
+                ErrorCode.InvalidParams,
+                "'cwd' parameter must be provided as a string."
+              );
+            }
+            return await prepareJavaSdkEnvironmentCookbook(safeArgs.cwd);
           }
 
           default:
@@ -146,9 +169,7 @@ class JavaSDKToolsServer {
         );
       }
     });
-  }
-
-  async run(): Promise<void> {
+  }  async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
 
