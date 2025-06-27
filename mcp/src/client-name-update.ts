@@ -44,9 +44,9 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 
 6. **Update Downstream Code**
 
-  If you have already generated code or documentation that references the old model name, update those references as well.
 
-7. Open the .diff file you created. Ask the user to commit the changes on client.tsp file and the generated Java SDK.
+  If Check the current working directory, if there is existing java code or documentation that references the old class ${oldName}, update those references to the new class ${newName}.
+  If the old class is not used anywhere, delete the file.
 
 ---
 

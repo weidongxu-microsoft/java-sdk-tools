@@ -26,6 +26,8 @@ export async function generateJavaSdk(args: any, isGenerate: boolean = true): Pr
       if (generateResult.stderr) {
         result += `\nErrors:\n${generateResult.stderr}\n`;
       }
+
+      result += `\nPlease check the above output for details on the failure. If it complains missing Java environment, please ask for preparing environment.\n`;
     }
 
     return {
