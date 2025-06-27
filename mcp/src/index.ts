@@ -95,7 +95,8 @@ class JavaSDKToolsServer {
               },
               required: ["oldName", "newName"],
             },
-          },          {
+          },          
+          {
             name: "prepare_java_sdk_environment",
             description: "Get step-by-step instructions to prepare the environment for Java SDK generation, including setting up directories, dependencies, and configuration files",
             inputSchema: {
