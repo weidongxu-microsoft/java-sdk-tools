@@ -44,7 +44,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("init_java_sdk");
-    const result = await initJavaSdk(args);
+    const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
     return result;
   }
 );
@@ -80,7 +80,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("sync_java_sdk");
-    const result = await generateJavaSdk(args, false);
+    const result = await generateJavaSdk(args.cwd, false);
     return result;
   }
 );
@@ -99,7 +99,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("generate_java_sdk");
-    const result = await generateJavaSdk(args, true);
+    const result = await generateJavaSdk(args.cwd, true);
     return result;
   }
 );

@@ -1,7 +1,6 @@
 import { spawnAsync } from './utils/index.js';
 
-export async function initJavaSdk(args: any): Promise<any> {
-  const { cwd, tspConfigUrl } = args;
+export async function initJavaSdk(cwd: string, tspConfigUrl: string): Promise<any> {
   try {
     process.chdir(cwd);
 

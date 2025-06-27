@@ -1,4 +1,4 @@
-export async function prepareJavaSdkEnvironmentCookbook(cwd: string) {
+export async function prepareJavaSdkEnvironmentCookbook(cwd: string): Promise<any> {
   const cookbook = `
 # Java SDK Generation Environment Setup Guide
 

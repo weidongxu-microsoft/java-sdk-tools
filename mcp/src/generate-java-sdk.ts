@@ -1,7 +1,6 @@
 import { spawnAsync } from './utils/index.js';
 
-export async function generateJavaSdk(args: any, isGenerate: boolean = true): Promise<any> {
-  const { cwd } = args;
+export async function generateJavaSdk(cwd: string, isGenerate: boolean = true): Promise<any> {
   try {
     process.chdir(cwd);
 
