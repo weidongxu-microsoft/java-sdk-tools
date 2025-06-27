@@ -11,6 +11,7 @@ import { brownfieldMigration } from "./brownfield-migrate.js";
 import { initJavaSdk } from "./init-java-sdk.js";
 import { prepareJavaSdkEnvironmentCookbook } from "./prepare-environment.js";
 import { buildJavaSdk } from "./build-java-sdk.js";
+import { getJavaSdkChangelog } from "./java-sdk-changelog.js";
 
 // Create the MCP server
 const server = new McpServer({
@@ -76,6 +77,36 @@ server.registerTool(
     const result = await buildJavaSdk(
       args.cwd,
       args.moduleDirectory,
+      args.groupId,
+      args.artifactId,
+    );
+    return result;
+  },
+);
+
+// Register get_java_sdk_changelog tool
+server.registerTool(
+  "get_java_sdk_changelog",
+  {
+    description:
+      "Get the changelog for the Java SDK for groupId that starts with `com.azure`",
+    inputSchema: {
+      jarPath: z
+        .string()
+        .describe(
+          "The absolute path to the JAR file of the Java SDK. It should be under the `target` directory of the Java SDK module.",
+        ),
+      groupId: z.string().describe("The group ID for the Java SDK"),
+      artifactId: z.string().describe("The artifact ID for the Java SDK"),
+    },
+    annotations: {
+      title: "Get Java SDK Changelog",
+    },
+  },
+  async (args) => {
+    logToolCall("get_java_sdk_changelog");
+    const result = await getJavaSdkChangelog(
+      args.jarPath,
       args.groupId,
       args.artifactId,
     );
