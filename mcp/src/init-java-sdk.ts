@@ -1,8 +1,8 @@
 import { spawnAsync } from "./utils/index.js";
 
-export async function generateJavaSdk(
+export async function initJavaSdk(
   cwd: string,
-  isGenerate: boolean = true,
+  tspConfigUrl: string,
 ): Promise<any> {
   try {
     process.chdir(cwd);
@@ -10,7 +10,7 @@ export async function generateJavaSdk(
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
       "tsp-client",
-      [isGenerate ? "generate" : "update", "--debug", "--save-inputs"],
+      ["init", "--debug", "--save-inputs", "--tsp-config", tspConfigUrl],
       {
         cwd: process.cwd(),
         shell: true, // Use shell to allow tsp-client command
@@ -22,6 +22,11 @@ export async function generateJavaSdk(
 
     if (generateResult.success) {
       result += `✅ SDK generation completed successfully!\n\n`;
+      result += `Output:\n${generateResult.stdout}\n`;
+
+      if (generateResult.stderr) {
+        result += `\nWarnings/Info:\n${generateResult.stderr}\n`;
+      }
     } else {
       result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
 
@@ -32,8 +37,6 @@ export async function generateJavaSdk(
       if (generateResult.stderr) {
         result += `\nErrors:\n${generateResult.stderr}\n`;
       }
-
-      result += `\nPlease check the above output for details on the failure. If it complains missing Java environment, please ask for preparing environment.\n`;
     }
 
     return {

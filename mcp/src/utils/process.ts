@@ -1,4 +1,4 @@
-import { spawn, SpawnOptions } from 'child_process';
+import { spawn, SpawnOptions } from "child_process";
 
 export interface ProcessResult {
   stdout: string;
@@ -22,18 +22,18 @@ export interface SpawnAsyncOptions extends SpawnOptions {
 export async function spawnAsync(
   command: string,
   args: string[] = [],
-  options: SpawnAsyncOptions = {}
+  options: SpawnAsyncOptions = {},
 ): Promise<ProcessResult> {
   return new Promise((resolve, reject) => {
     const { timeout, ...spawnOptions } = options;
-    
+
     const child = spawn(command, args, {
       ...spawnOptions,
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ["pipe", "pipe", "pipe"],
     });
 
-    let stdout = '';
-    let stderr = '';
+    let stdout = "";
+    let stderr = "";
     let timeoutId: NodeJS.Timeout | null = null;
     let isTimedOut = false;
 
@@ -41,12 +41,12 @@ export async function spawnAsync(
     if (timeout && timeout > 0) {
       timeoutId = setTimeout(() => {
         isTimedOut = true;
-        child.kill('SIGTERM');
-        
+        child.kill("SIGTERM");
+
         // If SIGTERM doesn't work, force kill after a short delay
         setTimeout(() => {
           if (!child.killed) {
-            child.kill('SIGKILL');
+            child.kill("SIGKILL");
           }
         }, 1000);
       }, timeout);
@@ -54,20 +54,20 @@ export async function spawnAsync(
 
     // Capture stdout
     if (child.stdout) {
-      child.stdout.on('data', (data: Buffer) => {
+      child.stdout.on("data", (data: Buffer) => {
         stdout += data.toString();
       });
     }
 
     // Capture stderr
     if (child.stderr) {
-      child.stderr.on('data', (data: Buffer) => {
+      child.stderr.on("data", (data: Buffer) => {
         stderr += data.toString();
       });
     }
 
     // Handle process completion
-    child.on('close', (code: number | null) => {
+    child.on("close", (code: number | null) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -79,7 +79,7 @@ export async function spawnAsync(
         stdout: stdout.trim(),
         stderr: stderr.trim(),
         exitCode,
-        success
+        success,
       };
 
       if (isTimedOut) {
@@ -90,7 +90,7 @@ export async function spawnAsync(
     });
 
     // Handle spawn errors
-    child.on('error', (error: Error) => {
+    child.on("error", (error: Error) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -99,7 +99,7 @@ export async function spawnAsync(
         stdout: stdout.trim(),
         stderr: `Spawn error: ${error.message}\n${stderr.trim()}`,
         exitCode: -1,
-        success: false
+        success: false,
       };
 
       resolve(result);
@@ -115,15 +115,15 @@ export async function spawnAsync(
  */
 export async function execAsync(
   command: string,
-  options: SpawnAsyncOptions = {}
+  options: SpawnAsyncOptions = {},
 ): Promise<ProcessResult> {
-  const isWindows = process.platform === 'win32';
-  const shell = isWindows ? 'cmd.exe' : '/bin/sh';
-  const shellFlag = isWindows ? '/c' : '-c';
-  
+  const isWindows = process.platform === "win32";
+  const shell = isWindows ? "cmd.exe" : "/bin/sh";
+  const shellFlag = isWindows ? "/c" : "-c";
+
   return spawnAsync(shell, [shellFlag, command], {
     ...options,
-    shell: false // We're manually handling shell execution
+    shell: false, // We're manually handling shell execution
   });
 }
 
@@ -137,18 +137,18 @@ export async function execAsync(
 export async function spawnAndThrow(
   command: string,
   args: string[] = [],
-  options: SpawnAsyncOptions = {}
+  options: SpawnAsyncOptions = {},
 ): Promise<string> {
   const result = await spawnAsync(command, args, options);
-  
+
   if (!result.success) {
-    const error = new Error(`Command failed: ${command} ${args.join(' ')}`);
+    const error = new Error(`Command failed: ${command} ${args.join(" ")}`);
     (error as any).stdout = result.stdout;
     (error as any).stderr = result.stderr;
     (error as any).exitCode = result.exitCode;
     throw error;
   }
-  
+
   return result.stdout;
 }
 
@@ -160,10 +160,10 @@ export async function spawnAndThrow(
  */
 export async function execAndThrow(
   command: string,
-  options: SpawnAsyncOptions = {}
+  options: SpawnAsyncOptions = {},
 ): Promise<string> {
   const result = await execAsync(command, options);
-  
+
   if (!result.success) {
     const error = new Error(`Command failed: ${command}`);
     (error as any).stdout = result.stdout;
@@ -171,6 +171,6 @@ export async function execAndThrow(
     (error as any).exitCode = result.exitCode;
     throw error;
   }
-  
+
   return result.stdout;
 }

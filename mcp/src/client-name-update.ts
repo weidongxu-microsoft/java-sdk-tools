@@ -1,4 +1,7 @@
-export async function clientNameUpdateCookbook(oldName: string, newName: string): Promise<any> {
+export async function clientNameUpdateCookbook(
+  oldName: string,
+  newName: string,
+): Promise<any> {
   const cookbook = `
   Follow below instruction to update old client name to new client name in both client.tsp and the generated Java SDK.
 
