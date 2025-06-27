@@ -3,8 +3,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 import { generateJavaSdk } from "./generate-java-sdk.js";
 import { clientNameUpdateCookbook } from "./client-name-update.js";
 import { brownfieldMigration } from "./brownfield-migrate.js";
@@ -21,10 +21,10 @@ const server = new McpServer({
 const logToolCall = (toolName: string) => {
   const logMsg = `[${new Date().toISOString()}] [MCP] Tool called: ${toolName}\n`;
   try {
-    const logPath = path.resolve(process.cwd(), 'mcp-server.log');
-    fs.appendFileSync(logPath, logMsg, { encoding: 'utf8' });
+    const logPath = path.resolve(process.cwd(), "mcp-server.log");
+    fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
   } catch (logErr) {
-    console.error('Failed to write to mcp-server.log:', logErr);
+    console.error("Failed to write to mcp-server.log:", logErr);
   }
   process.stderr.write(logMsg);
 };
@@ -35,7 +35,9 @@ server.registerTool(
   {
     description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
     inputSchema: {
-      cwd: z.string().describe("The absolute path to the directory of the workspace root"),
+      cwd: z
+        .string()
+        .describe("The absolute path to the directory of the workspace root"),
       tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file"),
     },
     annotations: {
@@ -46,14 +48,15 @@ server.registerTool(
     logToolCall("init_java_sdk");
     const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
     return result;
-  }
+  },
 );
 
 // Register instruction_migrate_typespec tool
 server.registerTool(
   "instruction_migrate_typespec",
   {
-    description: "The instructions for migrating Java SDK to generate from TypeSpec",
+    description:
+      "The instructions for migrating Java SDK to generate from TypeSpec",
     inputSchema: {},
     annotations: {
       title: "Migration Instructions",
@@ -63,16 +66,21 @@ server.registerTool(
     logToolCall("instruction_migrate_typespec");
     const result = await brownfieldMigration();
     return result;
-  }
+  },
 );
 
 // Register sync_java_sdk tool
 server.registerTool(
   "sync_java_sdk",
   {
-    description: "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
+    description:
+      "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
     inputSchema: {
-      cwd: z.string().describe("The absolute path to the directory containing tsp-location.yaml"),
+      cwd: z
+        .string()
+        .describe(
+          "The absolute path to the directory containing tsp-location.yaml",
+        ),
     },
     annotations: {
       title: "Sync Java SDK",
@@ -82,16 +90,21 @@ server.registerTool(
     logToolCall("sync_java_sdk");
     const result = await generateJavaSdk(args.cwd, false);
     return result;
-  }
+  },
 );
 
 // Register generate_java_sdk tool
 server.registerTool(
   "generate_java_sdk",
   {
-    description: "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
+    description:
+      "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
     inputSchema: {
-      cwd: z.string().describe("The absolute path to the directory containing tsp-location.yaml"),
+      cwd: z
+        .string()
+        .describe(
+          "The absolute path to the directory containing tsp-location.yaml",
+        ),
     },
     annotations: {
       title: "Generate Java SDK",
@@ -101,14 +114,15 @@ server.registerTool(
     logToolCall("generate_java_sdk");
     const result = await generateJavaSdk(args.cwd, true);
     return result;
-  }
+  },
 );
 
 // Register update_client_name tool
 server.registerTool(
   "update_client_name",
   {
-    description: "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
+    description:
+      "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
     inputSchema: {
       oldName: z.string().describe("The old client name to be updated."),
       newName: z.string().describe("The new client name to use."),
@@ -121,16 +135,21 @@ server.registerTool(
     logToolCall("update_client_name");
     const result = await clientNameUpdateCookbook(args.oldName, args.newName);
     return result;
-  }
+  },
 );
 
 // Register prepare_java_sdk_environment tool
 server.registerTool(
   "prepare_java_sdk_environment",
   {
-    description: "Get step-by-step instructions to prepare the environment for Java SDK generation, including setting up directories, dependencies, and configuration files",
+    description:
+      "Get step-by-step instructions to prepare the environment for Java SDK generation, including setting up directories, dependencies, and configuration files",
     inputSchema: {
-      cwd: z.string().describe("The absolute path to the working directory where the environment should be prepared"),
+      cwd: z
+        .string()
+        .describe(
+          "The absolute path to the working directory where the environment should be prepared",
+        ),
     },
     annotations: {
       title: "Prepare Java SDK Environment",
@@ -140,7 +159,7 @@ server.registerTool(
     logToolCall("prepare_java_sdk_environment");
     const result = await prepareJavaSdkEnvironmentCookbook(args.cwd);
     return result;
-  }
+  },
 );
 
 // Setup error handling

@@ -1,27 +1,34 @@
-import { spawnAsync } from './utils/index.js';
+import { spawnAsync } from "./utils/index.js";
 
-export async function generateJavaSdk(cwd: string, isGenerate: boolean = true): Promise<any> {
+export async function generateJavaSdk(
+  cwd: string,
+  isGenerate: boolean = true,
+): Promise<any> {
   try {
     process.chdir(cwd);
 
     // Run the Java SDK generation command
-    const generateResult = await spawnAsync('tsp-client', [isGenerate ? 'generate' : 'update', '--debug', '--save-inputs'], {
-      cwd: process.cwd(),
-      shell: true, // Use shell to allow tsp-client command
-      timeout: 600000 // 10 minute timeout
-    });
+    const generateResult = await spawnAsync(
+      "tsp-client",
+      [isGenerate ? "generate" : "update", "--debug", "--save-inputs"],
+      {
+        cwd: process.cwd(),
+        shell: true, // Use shell to allow tsp-client command
+        timeout: 600000, // 10 minute timeout
+      },
+    );
 
     let result = `Java SDK Generation Results:\n\n`;
-    
+
     if (generateResult.success) {
       result += `✅ SDK generation completed successfully!\n\n`;
     } else {
       result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
-      
+
       if (generateResult.stdout) {
         result += `Output:\n${generateResult.stdout}\n`;
       }
-      
+
       if (generateResult.stderr) {
         result += `\nErrors:\n${generateResult.stderr}\n`;
       }
