@@ -1,16 +1,33 @@
 import { spawnAsync } from "./utils/index.js";
 
-export async function initJavaSdk(
+export async function buildJavaSdk(
   cwd: string,
-  tspConfigUrl: string,
+  moduleDirectory: string,
+  groupId: string,
+  artifactId: string,
 ): Promise<any> {
   try {
     process.chdir(cwd);
 
+    const mvnCmd = process.platform === "win32" ? "mvn.cmd" : "mvn";
+
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
-      "tsp-client",
-      ["init", "--debug", "--save-inputs", "--tsp-config", tspConfigUrl],
+      mvnCmd,
+      [
+        "--no-transfer-progress",
+        "clean",
+        "package",
+        "-f",
+        moduleDirectory + "/pom.xml",
+        "-Dmaven.javadoc.skip",
+        "-Dcodesnippet.skip",
+        "-Dgpg.skip",
+        "-Drevapi.skip",
+        "-pl",
+        groupId + ":" + artifactId,
+        "-am",
+      ],
       {
         cwd: process.cwd(),
         shell: true, // Use shell to allow tsp-client command
@@ -21,9 +38,9 @@ export async function initJavaSdk(
     let result = `Java SDK Generation Results:\n\n`;
 
     if (generateResult.success) {
-      result += `✅ SDK generation completed successfully!\n\n`;
+      result += `✅ SDK build completed successfully!\n\n`;
     } else {
-      result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
+      result += `❌ SDK build failed with exit code ${generateResult.exitCode}\n\n`;
 
       if (generateResult.stdout) {
         result += `Output:\n${generateResult.stdout}\n`;
@@ -47,7 +64,7 @@ export async function initJavaSdk(
       content: [
         {
           type: "text",
-          text: `Unexpected error during SDK generation: ${error instanceof Error ? error.message : String(error)}`,
+          text: `Unexpected error during SDK build: ${error instanceof Error ? error.message : String(error)}`,
         },
       ],
     };

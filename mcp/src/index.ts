@@ -10,6 +10,7 @@ import { clientNameUpdateCookbook } from "./client-name-update.js";
 import { brownfieldMigration } from "./brownfield-migrate.js";
 import { initJavaSdk } from "./init-java-sdk.js";
 import { prepareJavaSdkEnvironmentCookbook } from "./prepare-environment.js";
+import { buildJavaSdk } from "./build-java-sdk.js";
 
 // Create the MCP server
 const server = new McpServer({
@@ -47,6 +48,37 @@ server.registerTool(
   async (args) => {
     logToolCall("init_java_sdk");
     const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
+    return result;
+  },
+);
+
+// Register build_java_sdk tool
+server.registerTool(
+  "build_java_sdk",
+  {
+    description: "Build the Java SDK for groupId that starts with `com.azure`",
+    inputSchema: {
+      cwd: z
+        .string()
+        .describe("The absolute path to the directory of the workspace root"),
+      moduleDirectory: z
+        .string()
+        .describe("The absolute path to the directory of the Java SDK"),
+      groupId: z.string().describe("The group ID for the Java SDK"),
+      artifactId: z.string().describe("The artifact ID for the Java SDK"),
+    },
+    annotations: {
+      title: "Build Java SDK",
+    },
+  },
+  async (args) => {
+    logToolCall("build_java_sdk");
+    const result = await buildJavaSdk(
+      args.cwd,
+      args.moduleDirectory,
+      args.groupId,
+      args.artifactId,
+    );
     return result;
   },
 );
