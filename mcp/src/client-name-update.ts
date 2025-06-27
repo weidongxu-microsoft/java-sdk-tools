@@ -44,11 +44,9 @@ export async function clientNameUpdateCookbook(oldName: string, newName: string)
 
 6. **Update Downstream Code**
 
-  
-  If you have already generated/existing code or documentation that references the old model name, update those references as well.
-  If the old model is not used anywhere, delete the file. 
-  
-  In above example, first updating all the references to 'OldModelName' in the current workspace, then if 'OldModelName' is used anywhere, continue updating the references until it is not used anywhere. At last, delete the model with 'OldModelName' in the current workspace.
+
+  If Check the current working directory, if there is existing java code or documentation that references the old class ${oldName}, update those references to the new class ${newName}.
+  If the old class is not used anywhere, delete the file.
 
 ---
 

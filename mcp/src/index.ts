@@ -145,7 +145,8 @@ class JavaSDKToolsServer {
               );
             }
             return await clientNameUpdateCookbook(safeArgs.oldName, safeArgs.newName);
-          }          case "prepare_java_sdk_environment": {
+          }          
+          case "prepare_java_sdk_environment": {
             const safeArgs = args ?? {};
             if (typeof safeArgs.cwd !== "string") {
               throw new McpError(
