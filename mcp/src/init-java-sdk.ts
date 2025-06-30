@@ -10,7 +10,13 @@ export async function initJavaSdk(
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
       "tsp-client",
-      ["init", "--debug", "--save-inputs", "--tsp-config", tspConfigUrl],
+      [
+        "init",
+        "--debug",
+        "--skip-sync-and-generate",
+        "--tsp-config",
+        tspConfigUrl,
+      ],
       {
         cwd: process.cwd(),
         shell: true, // Use shell to allow tsp-client command

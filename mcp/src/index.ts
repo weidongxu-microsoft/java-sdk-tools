@@ -12,6 +12,7 @@ import { initJavaSdk } from "./init-java-sdk.js";
 import { prepareJavaSdkEnvironmentCookbook } from "./prepare-environment.js";
 import { buildJavaSdk } from "./build-java-sdk.js";
 import { getJavaSdkChangelog } from "./java-sdk-changelog.js";
+import { cleanJavaSource } from "./clean-java-source.js";
 
 // Create the MCP server
 const server = new McpServer({
@@ -22,12 +23,12 @@ const server = new McpServer({
 // Setup logging function
 const logToolCall = (toolName: string) => {
   const logMsg = `[${new Date().toISOString()}] [MCP] Tool called: ${toolName}\n`;
-  try {
-    const logPath = path.resolve(process.cwd(), "mcp-server.log");
-    fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
-  } catch (logErr) {
-    console.error("Failed to write to mcp-server.log:", logErr);
-  }
+  // try {
+  //   const logPath = path.resolve(process.cwd(), "mcp-server.log");
+  //   fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
+  // } catch (logErr) {
+  //   console.error("Failed to write to mcp-server.log:", logErr);
+  // }
   process.stderr.write(logMsg);
 };
 
@@ -35,7 +36,8 @@ const logToolCall = (toolName: string) => {
 server.registerTool(
   "init_java_sdk",
   {
-    description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
+    description:
+      "Initiate the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml",
     inputSchema: {
       cwd: z
         .string()
@@ -49,6 +51,27 @@ server.registerTool(
   async (args) => {
     logToolCall("init_java_sdk");
     const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
+    return result;
+  },
+);
+
+// Register clean_java_source tool
+server.registerTool(
+  "clean_java_source",
+  {
+    description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
+    inputSchema: {
+      moduleDirectory: z
+        .string()
+        .describe("The absolute path to the directory of the Java SDK"),
+    },
+    annotations: {
+      title: "Clean Java Source",
+    },
+  },
+  async (args) => {
+    logToolCall("clean_java_source");
+    const result = await cleanJavaSource(args.moduleDirectory);
     return result;
   },
 );
