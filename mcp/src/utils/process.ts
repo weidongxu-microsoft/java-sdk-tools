@@ -142,7 +142,9 @@ export async function spawnAndThrow(
   const result = await spawnAsync(command, args, options);
 
   if (!result.success) {
-    const error = new Error(`Command failed: ${command} ${args.join(" ")}`) as Error & {
+    const error = new Error(
+      `Command failed: ${command} ${args.join(" ")}`,
+    ) as Error & {
       stdout: string;
       stderr: string;
       exitCode: number;
