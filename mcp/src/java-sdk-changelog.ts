@@ -1,3 +1,4 @@
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 import { mkdtemp, rm } from "fs/promises";
 import { join } from "path";
@@ -7,16 +8,13 @@ import { XMLParser } from "fast-xml-parser";
 import fs from "fs";
 
 const MAVEN_HOST = "https://repo1.maven.org/maven2/";
-const MAVEN_URL =
-  MAVEN_HOST +
-  "/{group_id}/{artifact_id}/{version}/{artifact_id}-{version}.jar";
 
 export async function getJavaSdkChangelog(
   cwd: string,
   jarPath: string,
   groupId: string,
   artifactId: string,
-): Promise<any> {
+): Promise<CallToolResult> {
   let tempDir: string | null = null;
 
   try {

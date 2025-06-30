@@ -1,9 +1,10 @@
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 
 export async function initJavaSdk(
   cwd: string,
   tspConfigUrl: string,
-): Promise<any> {
+): Promise<CallToolResult> {
   try {
     process.chdir(cwd);
 

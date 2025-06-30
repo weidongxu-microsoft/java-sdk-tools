@@ -1,3 +1,4 @@
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 
 export async function buildJavaSdk(
@@ -5,7 +6,7 @@ export async function buildJavaSdk(
   moduleDirectory: string,
   groupId: string,
   artifactId: string,
-): Promise<any> {
+): Promise<CallToolResult> {
   try {
     process.chdir(cwd);
 

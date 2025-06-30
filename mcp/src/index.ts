@@ -3,8 +3,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import * as fs from "fs";
-import * as path from "path";
 import { generateJavaSdk } from "./generate-java-sdk.js";
 import { clientNameUpdateCookbook } from "./client-name-update.js";
 import { brownfieldMigration } from "./brownfield-migrate.js";

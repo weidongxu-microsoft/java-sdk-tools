@@ -24,7 +24,7 @@ export async function spawnAsync(
   args: string[] = [],
   options: SpawnAsyncOptions = {},
 ): Promise<ProcessResult> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _) => {
     const { timeout, ...spawnOptions } = options;
 
     const child = spawn(command, args, {
