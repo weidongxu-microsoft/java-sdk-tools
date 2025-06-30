@@ -91,6 +91,9 @@ server.registerTool(
     description:
       "Get the changelog for the Java SDK for groupId that starts with `com.azure`",
     inputSchema: {
+      cwd: z
+        .string()
+        .describe("The absolute path to the directory of the workspace root"),
       jarPath: z
         .string()
         .describe(
@@ -106,6 +109,7 @@ server.registerTool(
   async (args) => {
     logToolCall("get_java_sdk_changelog");
     const result = await getJavaSdkChangelog(
+      args.cwd,
       args.jarPath,
       args.groupId,
       args.artifactId,
