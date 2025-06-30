@@ -42,7 +42,6 @@ export default [
       'dist/',
       'node_modules/',
       '*.js', // This ignores JS files in the root
-      'src/utils/process.ts',
     ],
   },
 ];
