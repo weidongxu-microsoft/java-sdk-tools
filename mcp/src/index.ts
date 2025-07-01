@@ -3,13 +3,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import * as fs from "fs";
-import * as path from "path";
 import { generateJavaSdk } from "./generate-java-sdk.js";
 import { clientNameUpdateCookbook } from "./client-name-update.js";
 import { brownfieldMigration } from "./brownfield-migrate.js";
 import { initJavaSdk } from "./init-java-sdk.js";
 import { prepareJavaSdkEnvironmentCookbook } from "./prepare-environment.js";
+import { buildJavaSdk } from "./build-java-sdk.js";
+import { getJavaSdkChangelog } from "./java-sdk-changelog.js";
+import { cleanJavaSource } from "./clean-java-source.js";
 
 // Create the MCP server
 const server = new McpServer({
@@ -20,12 +21,12 @@ const server = new McpServer({
 // Setup logging function
 const logToolCall = (toolName: string) => {
   const logMsg = `[${new Date().toISOString()}] [MCP] Tool called: ${toolName}\n`;
-  try {
-    const logPath = path.resolve(process.cwd(), "mcp-server.log");
-    fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
-  } catch (logErr) {
-    console.error("Failed to write to mcp-server.log:", logErr);
-  }
+  // try {
+  //   const logPath = path.resolve(process.cwd(), "mcp-server.log");
+  //   fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
+  // } catch (logErr) {
+  //   console.error("Failed to write to mcp-server.log:", logErr);
+  // }
   process.stderr.write(logMsg);
 };
 
@@ -33,7 +34,8 @@ const logToolCall = (toolName: string) => {
 server.registerTool(
   "init_java_sdk",
   {
-    description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
+    description:
+      "Initiate the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml",
     inputSchema: {
       cwd: z
         .string()
@@ -47,6 +49,92 @@ server.registerTool(
   async (args) => {
     logToolCall("init_java_sdk");
     const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
+    return result;
+  },
+);
+
+// Register clean_java_source tool
+server.registerTool(
+  "clean_java_source",
+  {
+    description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
+    inputSchema: {
+      moduleDirectory: z
+        .string()
+        .describe("The absolute path to the directory of the Java SDK"),
+    },
+    annotations: {
+      title: "Clean Java Source",
+    },
+  },
+  async (args) => {
+    logToolCall("clean_java_source");
+    const result = await cleanJavaSource(args.moduleDirectory);
+    return result;
+  },
+);
+
+// Register build_java_sdk tool
+server.registerTool(
+  "build_java_sdk",
+  {
+    description: "Build the Java SDK for groupId that starts with `com.azure`",
+    inputSchema: {
+      cwd: z
+        .string()
+        .describe("The absolute path to the directory of the workspace root"),
+      moduleDirectory: z
+        .string()
+        .describe("The absolute path to the directory of the Java SDK"),
+      groupId: z.string().describe("The group ID for the Java SDK"),
+      artifactId: z.string().describe("The artifact ID for the Java SDK"),
+    },
+    annotations: {
+      title: "Build Java SDK",
+    },
+  },
+  async (args) => {
+    logToolCall("build_java_sdk");
+    const result = await buildJavaSdk(
+      args.cwd,
+      args.moduleDirectory,
+      args.groupId,
+      args.artifactId,
+    );
+    return result;
+  },
+);
+
+// Register get_java_sdk_changelog tool
+server.registerTool(
+  "get_java_sdk_changelog",
+  {
+    description:
+      "Get the changelog for the Java SDK for groupId that starts with `com.azure`",
+    inputSchema: {
+      cwd: z
+        .string()
+        .describe("The absolute path to the directory of the workspace root"),
+      jarPath: z
+        .string()
+        .describe(
+          "The absolute path to the JAR file of the Java SDK. It should be under the `target` directory of the Java SDK module.",
+        ),
+      groupId: z.string().describe("The group ID for the Java SDK"),
+      artifactId: z.string().describe("The artifact ID for the Java SDK"),
+    },
+    annotations: {
+      title: "Get Java SDK Changelog",
+    },
+  },
+  async (args) => {
+    logToolCall("get_java_sdk_changelog");
+    const result = await getJavaSdkChangelog(
+      args.cwd,
+      args.jarPath,
+      args.groupId,
+      args.artifactId,
+    );
     return result;
   },
 );

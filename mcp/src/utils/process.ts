@@ -24,7 +24,7 @@ export async function spawnAsync(
   args: string[] = [],
   options: SpawnAsyncOptions = {},
 ): Promise<ProcessResult> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const { timeout, ...spawnOptions } = options;
 
     const child = spawn(command, args, {
@@ -34,17 +34,17 @@ export async function spawnAsync(
 
     let stdout = "";
     let stderr = "";
-    let timeoutId: NodeJS.Timeout | null = null;
+    let timeoutId: ReturnType<typeof globalThis.setTimeout> | null = null;
     let isTimedOut = false;
 
     // Set up timeout if specified
     if (timeout && timeout > 0) {
-      timeoutId = setTimeout(() => {
+      timeoutId = globalThis.setTimeout(() => {
         isTimedOut = true;
         child.kill("SIGTERM");
 
         // If SIGTERM doesn't work, force kill after a short delay
-        setTimeout(() => {
+        globalThis.setTimeout(() => {
           if (!child.killed) {
             child.kill("SIGKILL");
           }
@@ -69,7 +69,7 @@ export async function spawnAsync(
     // Handle process completion
     child.on("close", (code: number | null) => {
       if (timeoutId) {
-        clearTimeout(timeoutId);
+        globalThis.clearTimeout(timeoutId);
       }
 
       const exitCode = code ?? -1;
@@ -92,7 +92,7 @@ export async function spawnAsync(
     // Handle spawn errors
     child.on("error", (error: Error) => {
       if (timeoutId) {
-        clearTimeout(timeoutId);
+        globalThis.clearTimeout(timeoutId);
       }
 
       const result: ProcessResult = {
@@ -142,10 +142,16 @@ export async function spawnAndThrow(
   const result = await spawnAsync(command, args, options);
 
   if (!result.success) {
-    const error = new Error(`Command failed: ${command} ${args.join(" ")}`);
-    (error as any).stdout = result.stdout;
-    (error as any).stderr = result.stderr;
-    (error as any).exitCode = result.exitCode;
+    const error = new Error(
+      `Command failed: ${command} ${args.join(" ")}`,
+    ) as Error & {
+      stdout: string;
+      stderr: string;
+      exitCode: number;
+    };
+    error.stdout = result.stdout;
+    error.stderr = result.stderr;
+    error.exitCode = result.exitCode;
     throw error;
   }
 
@@ -165,10 +171,14 @@ export async function execAndThrow(
   const result = await execAsync(command, options);
 
   if (!result.success) {
-    const error = new Error(`Command failed: ${command}`);
-    (error as any).stdout = result.stdout;
-    (error as any).stderr = result.stderr;
-    (error as any).exitCode = result.exitCode;
+    const error = new Error(`Command failed: ${command}`) as Error & {
+      stdout: string;
+      stderr: string;
+      exitCode: number;
+    };
+    error.stdout = result.stdout;
+    error.stderr = result.stderr;
+    error.exitCode = result.exitCode;
     throw error;
   }
 

@@ -1,6 +1,8 @@
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
+
 export async function prepareJavaSdkEnvironmentCookbook(
   cwd: string,
-): Promise<any> {
+): Promise<CallToolResult> {
   const cookbook = `
 # Java SDK Generation Environment Setup Guide
 

@@ -1,16 +1,23 @@
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 
 export async function initJavaSdk(
   cwd: string,
   tspConfigUrl: string,
-): Promise<any> {
+): Promise<CallToolResult> {
   try {
     process.chdir(cwd);
 
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
       "tsp-client",
-      ["init", "--debug", "--save-inputs", "--tsp-config", tspConfigUrl],
+      [
+        "init",
+        "--debug",
+        "--skip-sync-and-generate",
+        "--tsp-config",
+        tspConfigUrl,
+      ],
       {
         cwd: process.cwd(),
         shell: true, // Use shell to allow tsp-client command
@@ -22,11 +29,6 @@ export async function initJavaSdk(
 
     if (generateResult.success) {
       result += `✅ SDK generation completed successfully!\n\n`;
-      result += `Output:\n${generateResult.stdout}\n`;
-
-      if (generateResult.stderr) {
-        result += `\nWarnings/Info:\n${generateResult.stderr}\n`;
-      }
     } else {
       result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
 
