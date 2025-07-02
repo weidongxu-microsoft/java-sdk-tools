@@ -1,4 +1,8 @@
-export async function prepareJavaSdkEnvironmentCookbook(cwd: string) {
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
+
+export async function prepareJavaSdkEnvironmentCookbook(
+  cwd: string,
+): Promise<CallToolResult> {
   const cookbook = `
 # Java SDK Generation Environment Setup Guide
 
@@ -32,7 +36,9 @@ output the versions of installed tools to ensure everything is set up correctly
 
 **Troubleshooting:** If any tool shows "Not found", revisit the relevant section above and follow the installation instructions.
   `;
-  console.error(`Generated streamlined environment preparation cookbook for: ${cwd}`);
+  console.log(
+    `Generated streamlined environment preparation cookbook for: ${cwd}`,
+  );
 
   return {
     content: [

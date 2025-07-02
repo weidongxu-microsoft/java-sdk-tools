@@ -1,17 +1,34 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 
-export async function generateJavaSdk(
+export async function buildJavaSdk(
   cwd: string,
-  isGenerate: boolean = true,
+  moduleDirectory: string,
+  groupId: string,
+  artifactId: string,
 ): Promise<CallToolResult> {
   try {
     process.chdir(cwd);
 
+    const mvnCmd = process.platform === "win32" ? "mvn.cmd" : "mvn";
+
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
-      "tsp-client",
-      [isGenerate ? "generate" : "update", "--debug", "--save-inputs"],
+      mvnCmd,
+      [
+        "--no-transfer-progress",
+        "clean",
+        "package",
+        "-f",
+        moduleDirectory + "/pom.xml",
+        "-Dmaven.javadoc.skip",
+        "-Dcodesnippet.skip",
+        "-Dgpg.skip",
+        "-Drevapi.skip",
+        "-pl",
+        groupId + ":" + artifactId,
+        "-am",
+      ],
       {
         cwd: process.cwd(),
         shell: true, // Use shell to allow tsp-client command
@@ -22,9 +39,9 @@ export async function generateJavaSdk(
     let result = `Java SDK Generation Results:\n\n`;
 
     if (generateResult.success) {
-      result += `✅ SDK generation completed successfully!\n\n`;
+      result += `✅ SDK build completed successfully!\n\n`;
     } else {
-      result += `❌ SDK generation failed with exit code ${generateResult.exitCode}\n\n`;
+      result += `❌ SDK build failed with exit code ${generateResult.exitCode}\n\n`;
 
       if (generateResult.stdout) {
         result += `Output:\n${generateResult.stdout}\n`;
@@ -33,8 +50,6 @@ export async function generateJavaSdk(
       if (generateResult.stderr) {
         result += `\nErrors:\n${generateResult.stderr}\n`;
       }
-
-      result += `\nPlease check the above output for details on the failure. If it complains missing Java environment, please ask for preparing environment.\n`;
     }
 
     return {
@@ -50,7 +65,7 @@ export async function generateJavaSdk(
       content: [
         {
           type: "text",
-          text: `Unexpected error during SDK generation: ${error instanceof Error ? error.message : String(error)}`,
+          text: `Unexpected error during SDK build: ${error instanceof Error ? error.message : String(error)}`,
         },
       ],
     };
