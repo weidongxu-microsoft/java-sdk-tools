@@ -2,28 +2,12 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 
 export async function initJavaSdk(
-  cwd: string,
+  rootDir: string,
   tspConfigUrl: string,
 ): Promise<CallToolResult> {
   try {
-    // if cwd is a submodule directory of a service, change it to root directory of azure-sdk-for-java
-    if (!cwd.endsWith("azure-sdk-for-java")) {
-      // change cwd to the root of azure-sdk-for-java, remove the part of the path after azure-sdk-for-java
-      const azureSdkForJavaIndex = cwd.indexOf("azure-sdk-for-java");
-      if (azureSdkForJavaIndex === -1) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `The current working directory (${cwd}) is not a valid azure-sdk-for-java root directory. Please run this tool from the root of the azure-sdk-for-java repository.`,
-            },
-          ],
-        };
-      }
-      cwd = cwd.substring(0, azureSdkForJavaIndex + "azure-sdk-for-java".length);
 
-    }
-    process.chdir(cwd);
+    process.chdir(rootDir);
 
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
