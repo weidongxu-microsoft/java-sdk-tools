@@ -29,11 +29,11 @@ server.registerTool(
   "init_java_sdk",
   {
     description:
-      "Initialize the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml, url is something like: https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml. The tool should be run from the root of the repository. Find the directory azure-sdk-for-java/ and run the tool from there.",
+      "Initialize the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml. Ask the user for the url to tspconfig.yaml. url is something like: https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml.",
     inputSchema: {
-      rootDir: z
+      cwd: z
         .string()
-        .describe("The absolute path to the directory of the workspace root"),
+        .describe("The absolute path to the directory of the workspace"),
       tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file"),
     },
     annotations: {
@@ -42,7 +42,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("init_java_sdk");
-    const result = await initJavaSdk(args.rootDir, args.tspConfigUrl);
+    const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
     return result;
   },
 );
@@ -72,11 +72,11 @@ server.registerTool(
 server.registerTool(
   "build_java_sdk",
   {
-    description: "Build the Java SDK for groupId that starts with `com.azure`",
+    description: "Build the Java SDK for groupId that starts with `com.azure`.",
     inputSchema: {
       cwd: z
         .string()
-        .describe("The absolute path to the directory of the workspace root"),
+        .describe("The absolute path to the directory of the workspace"),
       moduleDirectory: z
         .string()
         .describe("The absolute path to the directory of the Java SDK"),
@@ -180,12 +180,17 @@ server.registerTool(
   "generate_java_sdk",
   {
     description:
-      "Don't call prepare environment and build java sdk tools before calling this tool. Generate or update Java SDK from configuration in tsp-location.yaml, make sure there is already a tsp-location.yaml, if not, ask to initialize java sdk first. And make sure there is a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, tell the user to synchronize the TypeSpec source for Java SDK first.",
+      "Generate or update Java SDK from configuration in tsp-location.yaml for a target service, make sure there is already a tsp-location.yaml in the service submodule directory, if not, ask to initialize java sdk first. And make sure there is a directory named 'TempTypeSpecFiles' in the service submodule directory, if the directory is not present, tell the user to synchronize the TypeSpec source for Java SDK first.",
     inputSchema: {
-      cwd: z
+      moduleDirectory: z
         .string()
         .describe(
           "The absolute path to the directory containing tsp-location.yaml",
+        ),
+      rootDirectory: z
+        .string()
+        .describe(
+          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
         ),
     },
     annotations: {
