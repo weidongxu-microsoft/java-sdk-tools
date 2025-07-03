@@ -45,7 +45,7 @@ Open the service directory that contains `tsp-location.yaml` in VSCode. This sho
 
 Make sure the directory you open contains the `tsp-location.yaml` file, as this is where the MCP tools will operate.
 
-Create `.vscode/` folder in the directory
+Create `.vscode/` folder in the directory.
 
 ### Step 1: Add Server Configuration
 
@@ -63,7 +63,7 @@ Add the following configuration to your `.vscode/mcp.json` file:
 }
 ```
 
-Replace `path/to/your/mcp/dist/index.js` with the actual absolute path to your compiled MCP server.
+Replace `path/to/your/mcp/dist/index.js` with the actual absolute path to your compiled MCP server. (Refer to Installation section to install and build the MCP server.)
 
 ### Step 2: Restart VSCode
 
