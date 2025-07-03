@@ -112,7 +112,7 @@ If the MCP server isn't working:
 Here are some example prompts you can use with GitHub Copilot to interact with the Java SDK tools:
 
 ### Basic SDK Operations
-- `generate java sdk`
+- `update java sdk`
 - `build java sdk`
 - `clean java source`
 
