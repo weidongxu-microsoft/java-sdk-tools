@@ -31,10 +31,10 @@ server.registerTool(
     description:
       "Initialize the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml. Ask the user for the url to tspconfig.yaml. url is something like: https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml.",
     inputSchema: {
-      cwd: z
+      rootDirectory: z
         .string()
         .describe("The absolute path to the directory of the workspace"),
-      tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file"),
+      tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file, Make sure you ask for the correct URL containing commit id, not branch name."),
     },
     annotations: {
       title: "Initialize Java SDK",
@@ -42,7 +42,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("init_java_sdk");
-    const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
+    const result = await initJavaSdk(args.rootDirectory, args.tspConfigUrl);
     return result;
   },
 );
@@ -74,12 +74,16 @@ server.registerTool(
   {
     description: "Build the Java SDK for groupId that starts with `com.azure`.",
     inputSchema: {
-      cwd: z
-        .string()
-        .describe("The absolute path to the directory of the workspace"),
       moduleDirectory: z
         .string()
-        .describe("The absolute path to the directory of the Java SDK"),
+        .describe(
+          "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
+        ),
+      rootDirectory: z
+        .string()
+        .describe(
+          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
+        ),
       groupId: z.string().describe("The group ID for the Java SDK"),
       artifactId: z.string().describe("The artifact ID for the Java SDK"),
     },
@@ -90,7 +94,7 @@ server.registerTool(
   async (args) => {
     logToolCall("build_java_sdk");
     const result = await buildJavaSdk(
-      args.cwd,
+      args.rootDirectory,
       args.moduleDirectory,
       args.groupId,
       args.artifactId,
@@ -106,9 +110,11 @@ server.registerTool(
     description:
       "Get the changelog for the Java SDK for groupId that starts with `com.azure`",
     inputSchema: {
-      cwd: z
+      rootDirectory: z
         .string()
-        .describe("The absolute path to the directory of the workspace root"),
+        .describe(
+          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
+        ),
       jarPath: z
         .string()
         .describe(
@@ -124,7 +130,7 @@ server.registerTool(
   async (args) => {
     logToolCall("get_java_sdk_changelog");
     const result = await getJavaSdkChangelog(
-      args.cwd,
+      args.rootDirectory,
       args.jarPath,
       args.groupId,
       args.artifactId,
@@ -158,10 +164,15 @@ server.registerTool(
     description:
       "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
     inputSchema: {
-      cwd: z
+      moduleDirectory: z
         .string()
         .describe(
-          "The absolute path to the directory containing tsp-location.yaml",
+          "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
+        ),
+      rootDirectory: z
+        .string()
+        .describe(
+          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
         ),
     },
     annotations: {
@@ -170,7 +181,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("sync_java_sdk");
-    const result = await generateJavaSdk(args.cwd, false);
+    const result = await generateJavaSdk(args.moduleDirectory, false);
     return result;
   },
 );
@@ -185,7 +196,7 @@ server.registerTool(
       moduleDirectory: z
         .string()
         .describe(
-          "The absolute path to the directory containing tsp-location.yaml",
+          "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
         ),
       rootDirectory: z
         .string()
@@ -199,7 +210,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("generate_java_sdk");
-    const result = await generateJavaSdk(args.cwd, true);
+    const result = await generateJavaSdk(args.moduleDirectory, true);
     return result;
   },
 );
