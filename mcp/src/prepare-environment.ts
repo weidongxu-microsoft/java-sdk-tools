@@ -18,7 +18,8 @@ Check local Node.js and npm versions. If they are not installed, or if the versi
 
 ## 2. Java Environment Setup
 
-Install Java JDK and Maven if not exists, after installation, add the Java JDK and Maven to your system' variable, follow below steps:
+Install Java JDK and Maven if not exists, you can find the latest Microsoft OpenJDK from install the latest microsoft openjdk from https://learn.microsoft.com/en-us/java/openjdk/download. 
+After installation, add the Java JDK and Maven to your system' variable, follow below steps:
   - Configure JAVA_HOME and Add to PATH
   - Configure MAVEN_HOME and Add to PATH
 
@@ -35,7 +36,7 @@ output the versions of installed tools to ensure everything is set up correctly
 
 **Troubleshooting:** If any tool shows "Not found", revisit the relevant section above and follow the installation instructions.
   `;
-  console.error(
+  console.log(
     `Generated streamlined environment preparation cookbook for: ${cwd}`,
   );
 
