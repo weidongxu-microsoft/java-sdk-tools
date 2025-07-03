@@ -21,12 +21,6 @@ const server = new McpServer({
 // Setup logging function
 const logToolCall = (toolName: string) => {
   const logMsg = `[${new Date().toISOString()}] [MCP] Tool called: ${toolName}\n`;
-  // try {
-  //   const logPath = path.resolve(process.cwd(), "mcp-server.log");
-  //   fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
-  // } catch (logErr) {
-  //   console.error("Failed to write to mcp-server.log:", logErr);
-  // }
   process.stderr.write(logMsg);
 };
 
@@ -35,9 +29,9 @@ server.registerTool(
   "init_java_sdk",
   {
     description:
-      "Initiate the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml",
+      "Initialize the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml, url is something like: https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml. The tool should be run from the root of the repository. Find the directory azure-sdk-for-java/ and run the tool from there.",
     inputSchema: {
-      cwd: z
+      rootDir: z
         .string()
         .describe("The absolute path to the directory of the workspace root"),
       tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file"),
@@ -48,7 +42,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("init_java_sdk");
-    const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
+    const result = await initJavaSdk(args.rootDir, args.tspConfigUrl);
     return result;
   },
 );
@@ -144,7 +138,7 @@ server.registerTool(
   "instruction_migrate_typespec",
   {
     description:
-      "The instructions for migrating Java SDK to generate from TypeSpec",
+      "The instructions for generating Java SDK after migrating from Swagger to TypeSpec",
     inputSchema: {},
     annotations: {
       title: "Migration Instructions",
@@ -186,7 +180,7 @@ server.registerTool(
   "generate_java_sdk",
   {
     description:
-      "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
+      "Don't call prepare environment and build java sdk tools before calling this tool. Generate or update Java SDK from configuration in tsp-location.yaml, make sure there is already a tsp-location.yaml, if not, ask to initialize java sdk first. And make sure there is a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, tell the user to synchronize the TypeSpec source for Java SDK first.",
     inputSchema: {
       cwd: z
         .string()
@@ -211,17 +205,14 @@ server.registerTool(
   {
     description:
       "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
-    inputSchema: {
-      oldName: z.string().describe("The old client name to be updated."),
-      newName: z.string().describe("The new client name to use."),
-    },
+    inputSchema: {},
     annotations: {
       title: "Update Client Name",
     },
   },
-  async (args) => {
+  async () => {
     logToolCall("update_client_name");
-    const result = await clientNameUpdateCookbook(args.oldName, args.newName);
+    const result = await clientNameUpdateCookbook();
     return result;
   },
 );

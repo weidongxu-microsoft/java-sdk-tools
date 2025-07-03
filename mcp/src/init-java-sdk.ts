@@ -2,11 +2,11 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 
 export async function initJavaSdk(
-  cwd: string,
+  rootDir: string,
   tspConfigUrl: string,
 ): Promise<CallToolResult> {
   try {
-    process.chdir(cwd);
+    process.chdir(rootDir);
 
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(

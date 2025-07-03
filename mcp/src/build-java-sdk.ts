@@ -36,7 +36,7 @@ export async function buildJavaSdk(
       },
     );
 
-    let result = `Java SDK Generation Results:\n\n`;
+    let result = `Java SDK Build Results:\n\n`;
 
     if (generateResult.success) {
       result += `✅ SDK build completed successfully!\n\n`;
