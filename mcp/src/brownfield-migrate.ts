@@ -19,7 +19,7 @@ export async function brownfieldMigration(): Promise<CallToolResult> {
    Use the tool to build the Java SDK. This will compile the Java code and generate the necessary artifacts, e.g. JAR file.
 
 6. Get the changelog for the Java SDK.
-   Use the tool to get the changelog for the Java SDK. This will produce a changelog in JSON format.
+   Use the tool to get the changelog for the Java SDK. This will produce a changelog in markdown format.
 
 7. Review the changelog from step 6. Find possible places that can be fixed by renaming a model.
    DO NOT read "CHANGELOG.md" in the folder of the Java SDK module. It is for released library, and not suitable for the migration process.
