@@ -50,7 +50,7 @@ export async function updateChangelogMd(
   }
 }
 
-function updateChangelogText(
+export function updateChangelogText(
   oldChangelog: string,
   newChangelog: string,
 ): string {
