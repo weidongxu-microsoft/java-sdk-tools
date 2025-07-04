@@ -161,17 +161,41 @@ server.registerTool(
   },
 );
 
+// // Register sync_java_sdk tool
+// server.registerTool(
+//   "sync_java_sdk",
+//   {
+//     description:
+//       "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
+//     inputSchema: {
+//       moduleDirectory: z
+//         .string()
+//         .describe(
+//           "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
+//         ),
+//     },
+//     annotations: {
+//       title: "Sync Java SDK",
+//     },
+//   },
+//   async (args) => {
+//     logToolCall("sync_java_sdk");
+//     const result = await generateJavaSdk(args.moduleDirectory, false);
+//     return result;
+//   },
+// );
+
 // Register sync_java_sdk tool
 server.registerTool(
   "sync_java_sdk",
   {
     description:
-      "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
+     "Synchronize/Download the TypeSpec source for a target service to generate Java SDK from, from configuration in tsp-location.yaml",
     inputSchema: {
       moduleDirectory: z
         .string()
         .describe(
-          "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
+          "The absolute path to the directory where the tsp-location.yaml is located, it is the directory of the target service submodule (e.g. azure-sdk-for-java/sdk/communication/communication-messages)",
         ),
     },
     annotations: {
@@ -180,7 +204,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("sync_java_sdk");
-    const result = await generateJavaSdk(args.moduleDirectory, false);
+    const result = await generateJavaSdk(args.moduleDirectory, true);
     return result;
   },
 );
@@ -195,7 +219,7 @@ server.registerTool(
       moduleDirectory: z
         .string()
         .describe(
-          "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
+          "The absolute path to the directory for the service submodule directory, where the tsp-location.yaml is located",
         ),
     },
     annotations: {
