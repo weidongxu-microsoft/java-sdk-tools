@@ -56,11 +56,14 @@ server.registerTool(
 server.registerTool(
   "clean_java_source",
   {
-    description: "Clean the Java source code for a module, removing all generated source files and directories.",
+    description:
+      "Clean the Java source code for a module, removing all generated source files and directories.",
     inputSchema: {
       cwd: z
         .string()
-        .describe("The absolute path to the directory where tsp-location.yaml is located"),
+        .describe(
+          "The absolute path to the directory where tsp-location.yaml is located",
+        ),
     },
     annotations: {
       title: "Clean Java Source",
@@ -77,7 +80,8 @@ server.registerTool(
 server.registerTool(
   "build_java_sdk",
   {
-    description: "Build the Java SDK for a service sub module whose groupId starts with `com.azure`. The tool takes the module directory, root directory, groupId and artifactId as input parameters.",
+    description:
+      "Build the Java SDK for a service sub module whose groupId starts with `com.azure`. The tool takes the module directory, root directory, groupId and artifactId as input parameters.",
     inputSchema: {
       moduleDirectory: z
         .string()
@@ -112,14 +116,10 @@ server.registerTool(
 server.registerTool(
   "get_java_sdk_changelog",
   {
-    description: 
+    description:
       "Get the changelog for a service sub module whose groupId starts with `com.azure`. The tool takes the root directory, jarPath, groupId and artifactId as input parameters.",
     inputSchema: {
-      cwd: z
-        .string()
-        .describe(
-          "The current working directory",
-        ),
+      cwd: z.string().describe("The current working directory"),
       jarPath: z
         .string()
         .describe(
@@ -197,7 +197,7 @@ server.registerTool(
   "sync_java_sdk",
   {
     description:
-     "Synchronize/Download the TypeSpec source for a target service to generate Java SDK from, the tool takes the module directory as input parameter. Make sure there is a tsp-location.yaml in the module directory, if not, ask to initialize java sdk first.",
+      "Synchronize/Download the TypeSpec source for a target service to generate Java SDK from, the tool takes the module directory as input parameter. Make sure there is a tsp-location.yaml in the module directory, if not, ask to initialize java sdk first.",
     inputSchema: {
       moduleDirectory: z
         .string()

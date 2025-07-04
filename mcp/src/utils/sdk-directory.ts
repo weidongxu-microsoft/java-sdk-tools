@@ -1,9 +1,7 @@
 import path from "path";
 import * as fs from "fs";
 
-export async function findAzureSdkRoot(
-  dir: string,
-): Promise<string> {
+export async function findAzureSdkRoot(dir: string): Promise<string> {
   // Check if the input directory itself is the Azure SDK root
   if (await isAzureSdkRootDir(dir)) {
     return dir;
@@ -22,9 +20,7 @@ export async function findAzureSdkRoot(
     }
     currentDir = parentDir;
   }
-  throw new Error(
-    `Azure SDK root not found from module directory: ${dir}`,
-  );
+  throw new Error(`Azure SDK root not found from module directory: ${dir}`);
 }
 
 async function isAzureSdkRootDir(dir: string): Promise<boolean> {
