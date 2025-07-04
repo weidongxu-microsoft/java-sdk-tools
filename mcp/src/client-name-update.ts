@@ -1,9 +1,6 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 
-export async function clientNameUpdateCookbook(
-  oldName: string,
-  newName: string,
-): Promise<CallToolResult> {
+export async function clientNameUpdateCookbook(): Promise<CallToolResult> {
   const cookbook = `
   Follow below instruction to update old client name to new client name in both client.tsp and the generated Java SDK.
 
@@ -13,7 +10,7 @@ export async function clientNameUpdateCookbook(
 
   Check if there is already a directory named 'TempTypeSpecFiles'. If there is not, find the directory in the workspace that contains 'tsp-location.yaml'. Use the tool to synchronize the TypeSpec source for the Java SDK.
 
-2. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with ${oldName}**
+2. **Look at all \`.tsp\` files under folder 'TempTypeSpecFiles' and get the path of the Model or Operation or operation parameter declaration with the old client name**
 
   Look for the model or operation you want to rename under '.tsp' files. Get the path of the model or operation. For example, model \`OldModelName\`'s path is 'Azure.Communication.MessagesService.OldModelName', operation 'sendMessage''s path is 'Azure.Communication.MessagesService.AdminOperations.sendMessage'.
   \`\`\`typespec
@@ -31,7 +28,7 @@ export async function clientNameUpdateCookbook(
 
 3. **Update client.tsp**
 
-  Use and founded path and @clientName decorator to update the client name to ${newName}. Make sure you only update client.tsp file, other .tsp files should not be updated.
+  Use and founded path and @clientName decorator to update the client name to the new client name. Make sure you only update client.tsp file, other .tsp files should not be updated.
   For example, for model \`OldModelName\`, you can add below line to \`NewModelName\` to client.tsp like this. Update operation name or operation parameter name are similar.
   \`\`\`typespec
   
@@ -50,9 +47,14 @@ export async function clientNameUpdateCookbook(
 6. **Update Downstream Code**
 
 
-  If Check the current working directory, if there is existing java code or documentation that references the old class ${oldName}, update those references to the new class ${newName}.
-  If the old class is not used anywhere, delete the file.
+  If Check the current working directory, if there is existing java code or documentation that references the old class, update those references to the new class.
 
+7. **Verify the Changes**
+  Call the tool to build java sdk. If build fails, check the error message and fix the code until build succeeds.
+  After build succeeds, if the old class is not used anywhere,  delete the old class file.
+
+8. **Commit the Changes**
+  Ask the user to commit the SDK changes to the repository. And open the .diff file to review the changes and apply the changes to azure-rest-api-specs repository.
 ---
 
 **Tip:** Use your IDE’s “rename symbol” or “find and replace” feature to ensure you update all references safely.

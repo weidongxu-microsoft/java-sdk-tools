@@ -1,17 +1,17 @@
 import path from "path";
 import * as fs from "fs";
 
-export async function findAzureSdkRoot(
-  moduleDirectoryPath: string,
-): Promise<string> {
-  let currentDir = path.dirname(moduleDirectoryPath);
+export async function findAzureSdkRoot(dir: string): Promise<string> {
+  // Check if the input directory itself is the Azure SDK root
+  if (await isAzureSdkRootDir(dir)) {
+    return dir;
+  }
+
+  // find from the input directory's parent dir, until we find the azure-sdk-for-java root path
+  let currentDir = path.dirname(dir);
+
   while (currentDir !== path.dirname(currentDir)) {
-    // pom.xml, sdk and eng directories are expected at the root of the Azure SDK for Java
-    if (
-      (await checkFileExistence(path.join(currentDir, "pom.xml"))) &&
-      (await checkFileExistence(path.join(currentDir, "sdk"))) &&
-      (await checkFileExistence(path.join(currentDir, "eng")))
-    ) {
+    if (await isAzureSdkRootDir(currentDir)) {
       return currentDir;
     }
     const parentDir = path.dirname(currentDir);
@@ -20,8 +20,15 @@ export async function findAzureSdkRoot(
     }
     currentDir = parentDir;
   }
-  throw new Error(
-    `Azure SDK root not found from module directory: ${moduleDirectoryPath}`,
+  throw new Error(`Azure SDK root not found from module directory: ${dir}`);
+}
+
+async function isAzureSdkRootDir(dir: string): Promise<boolean> {
+  // pom.xml, sdk and eng directories are expected at the root of the Azure SDK for Java
+  return (
+    (await checkFileExistence(path.join(dir, "pom.xml"))) &&
+    (await checkFileExistence(path.join(dir, "sdk"))) &&
+    (await checkFileExistence(path.join(dir, "eng")))
   );
 }
 

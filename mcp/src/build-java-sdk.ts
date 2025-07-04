@@ -1,14 +1,16 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
-import { spawnAsync } from "./utils/index.js";
+import { findAzureSdkRoot, spawnAsync } from "./utils/index.js";
 
 export async function buildJavaSdk(
-  cwd: string,
+  rootDir: string,
   moduleDirectory: string,
   groupId: string,
   artifactId: string,
 ): Promise<CallToolResult> {
   try {
-    process.chdir(cwd);
+    // make sure it is the root directory of the Azure SDK for Java
+    rootDir = await findAzureSdkRoot(rootDir);
+    process.chdir(rootDir);
 
     const mvnCmd = process.platform === "win32" ? "mvn.cmd" : "mvn";
 
@@ -36,7 +38,7 @@ export async function buildJavaSdk(
       },
     );
 
-    let result = `Java SDK Generation Results:\n\n`;
+    let result = `Java SDK Build Results:\n\n`;
 
     if (generateResult.success) {
       result += `✅ SDK build completed successfully!\n\n`;

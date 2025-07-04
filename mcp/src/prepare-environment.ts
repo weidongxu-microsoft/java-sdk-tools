@@ -27,7 +27,6 @@ After installation, add the Java JDK and Maven to your system' variable, follow 
 
 Install and update TypeSpec tools to latest versions, tools include:
 - @azure-tools/typespec-client-generator-cli
-- @typespec/cli
 - @typespec/compiler
 
 ## 4. Verify Installation
@@ -36,7 +35,8 @@ output the versions of installed tools to ensure everything is set up correctly
 
 **Troubleshooting:** If any tool shows "Not found", revisit the relevant section above and follow the installation instructions.
   `;
-  console.log(
+
+  console.error(
     `Generated streamlined environment preparation cookbook for: ${cwd}`,
   );
 

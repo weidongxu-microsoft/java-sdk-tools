@@ -1,5 +1,5 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
-import { spawnAsync } from "./utils/index.js";
+import { findAzureSdkRoot, spawnAsync } from "./utils/index.js";
 import { mkdtemp, rm } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -18,6 +18,8 @@ export async function getJavaSdkChangelog(
   let tempDir: string | null = null;
 
   try {
+    // make sure cwd is the root directory of the Azure SDK for Java
+    cwd = await findAzureSdkRoot(cwd);
     const changelogJson = await getJavaSdkChangelogJson(
       cwd,
       jarPath,

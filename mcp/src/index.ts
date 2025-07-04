@@ -22,12 +22,6 @@ const server = new McpServer({
 // Setup logging function
 const logToolCall = (toolName: string) => {
   const logMsg = `[${new Date().toISOString()}] [MCP] Tool called: ${toolName}\n`;
-  // try {
-  //   const logPath = path.resolve(process.cwd(), "mcp-server.log");
-  //   fs.appendFileSync(logPath, logMsg, { encoding: "utf8" });
-  // } catch (logErr) {
-  //   console.error("Failed to write to mcp-server.log:", logErr);
-  // }
   process.stderr.write(logMsg);
 };
 
@@ -36,12 +30,16 @@ server.registerTool(
   "init_java_sdk",
   {
     description:
-      "Initiate the tsp-location.yaml for Java SDK, from URL to tspconfig.yaml",
+      "Initialize the tsp-location.yaml for generating Java SDK, from URL to tspconfig.yaml. Make sure you ask for the correct url containing commit id, not branch name.",
     inputSchema: {
       cwd: z
         .string()
-        .describe("The absolute path to the directory of the workspace root"),
-      tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file"),
+        .describe("The absolute path to the current workspace directory"),
+      tspConfigUrl: z
+        .string()
+        .describe(
+          "The URL to the tspconfig.yaml file. Make sure you ask for the correct URL containing commit id, not branch name. e.g. https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml",
+        ),
     },
     annotations: {
       title: "Initialize Java SDK",
@@ -58,11 +56,14 @@ server.registerTool(
 server.registerTool(
   "clean_java_source",
   {
-    description: "Initiate and generate Java SDK from URL to tspconfig.yaml",
+    description:
+      "Clean the Java source code for a module, removing all generated source files and directories.",
     inputSchema: {
-      moduleDirectory: z
+      cwd: z
         .string()
-        .describe("The absolute path to the directory of the Java SDK"),
+        .describe(
+          "The absolute path to the directory where tsp-location.yaml is located",
+        ),
     },
     annotations: {
       title: "Clean Java Source",
@@ -70,7 +71,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("clean_java_source");
-    const result = await cleanJavaSource(args.moduleDirectory);
+    const result = await cleanJavaSource(args.cwd);
     return result;
   },
 );
@@ -79,14 +80,19 @@ server.registerTool(
 server.registerTool(
   "build_java_sdk",
   {
-    description: "Build the Java SDK for groupId that starts with `com.azure`",
+    description:
+      "Build the Java SDK for a service sub module whose groupId starts with `com.azure`. The tool takes the module directory, root directory, groupId and artifactId as input parameters.",
     inputSchema: {
-      cwd: z
-        .string()
-        .describe("The absolute path to the directory of the workspace root"),
       moduleDirectory: z
         .string()
-        .describe("The absolute path to the directory of the Java SDK"),
+        .describe(
+          "The absolute path to the service sub module directory containing tsp-location.yaml",
+        ),
+      rootDirectory: z
+        .string()
+        .describe(
+          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
+        ),
       groupId: z.string().describe("The group ID for the Java SDK"),
       artifactId: z.string().describe("The artifact ID for the Java SDK"),
     },
@@ -97,7 +103,7 @@ server.registerTool(
   async (args) => {
     logToolCall("build_java_sdk");
     const result = await buildJavaSdk(
-      args.cwd,
+      args.rootDirectory,
       args.moduleDirectory,
       args.groupId,
       args.artifactId,
@@ -111,11 +117,9 @@ server.registerTool(
   "get_java_sdk_changelog",
   {
     description:
-      "Get the changelog for the Java SDK for groupId that starts with `com.azure`",
+      "Get the changelog for a service sub module whose groupId starts with `com.azure`. The tool takes the root directory, jarPath, groupId and artifactId as input parameters.",
     inputSchema: {
-      cwd: z
-        .string()
-        .describe("The absolute path to the directory of the workspace root"),
+      cwd: z.string().describe("The current working directory"),
       jarPath: z
         .string()
         .describe(
@@ -145,7 +149,7 @@ server.registerTool(
   "update_java_sdk_changelog",
   {
     description:
-      "Update the CHANGELOG.md file for the Java SDK, for groupId that starts with `com.azure`",
+      "Update the CHANGELOG.md file for a service sub module whose groupId starts with `com.azure`. The tool takes the absolute path to the JAR file, groupId and artifactId as input parameters.",
     inputSchema: {
       jarPath: z
         .string()
@@ -175,7 +179,7 @@ server.registerTool(
   "instruction_migrate_typespec",
   {
     description:
-      "The instructions for migrating Java SDK to generate from TypeSpec",
+      "The instructions for generating Java SDK after migrating from Swagger to TypeSpec",
     inputSchema: {},
     annotations: {
       title: "Migration Instructions",
@@ -193,12 +197,12 @@ server.registerTool(
   "sync_java_sdk",
   {
     description:
-      "Synchronize/Download the TypeSpec source for Java SDK, from configuration in tsp-location.yaml",
+      "Synchronize/Download the TypeSpec source for a target service to generate Java SDK from, the tool takes the module directory as input parameter. Make sure there is a tsp-location.yaml in the module directory, if not, ask to initialize java sdk first.",
     inputSchema: {
-      cwd: z
+      moduleDirectory: z
         .string()
         .describe(
-          "The absolute path to the directory containing tsp-location.yaml",
+          "The absolute path to the directory containing tsp-location.yaml, e.g. C:\\workspace\\azure-sdk-for-java\\sdk\\communication\\azure-communication-messages",
         ),
     },
     annotations: {
@@ -207,7 +211,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("sync_java_sdk");
-    const result = await generateJavaSdk(args.cwd, false);
+    const result = await generateJavaSdk(args.moduleDirectory, false);
     return result;
   },
 );
@@ -217,12 +221,12 @@ server.registerTool(
   "generate_java_sdk",
   {
     description:
-      "Generate Java SDK, from configuration in tsp-location.yaml, make sure there is already a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, Tell the user to synchronize the TypeSpec source for Java SDK first.",
+      "Don't call prepare environment and build java sdk tools before calling this tool. Generate or update Java SDK for a service from configuration in tsp-location.yaml, make sure there is already a tsp-location.yaml exists in the service module directory, if not, ask to initialize java sdk first. And make sure there is a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, tell the user to synchronize the TypeSpec source for Java SDK first. The tool takes the module directory as input parameter.",
     inputSchema: {
-      cwd: z
+      moduleDirectory: z
         .string()
         .describe(
-          "The absolute path to the directory containing tsp-location.yaml",
+          "The absolute path to the directory containing tsp-location.yaml, e.g. C:\\workspace\\azure-sdk-for-java\\sdk\\communication\\azure-communication-messages",
         ),
     },
     annotations: {
@@ -231,7 +235,7 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("generate_java_sdk");
-    const result = await generateJavaSdk(args.cwd, true);
+    const result = await generateJavaSdk(args.moduleDirectory, true);
     return result;
   },
 );
@@ -242,17 +246,14 @@ server.registerTool(
   {
     description:
       "Update client name for both client.tsp and the generated java sdk. Follow the returned instruction to update old client name to new client name, be sure to ask for old client name and new client name. e.g. MediaMessageContent.mediaUri to MediaMessageContent.mediaUrl",
-    inputSchema: {
-      oldName: z.string().describe("The old client name to be updated."),
-      newName: z.string().describe("The new client name to use."),
-    },
+    inputSchema: {},
     annotations: {
       title: "Update Client Name",
     },
   },
-  async (args) => {
+  async () => {
     logToolCall("update_client_name");
-    const result = await clientNameUpdateCookbook(args.oldName, args.newName);
+    const result = await clientNameUpdateCookbook();
     return result;
   },
 );
@@ -262,7 +263,7 @@ server.registerTool(
   "prepare_java_sdk_environment",
   {
     description:
-      "Get step-by-step instructions to prepare the environment for Java SDK generation, including setting up directories, dependencies, and configuration files",
+      "prepare the development environment for Java SDK generation, including 3 main areas: Node.js/npm, Java environment, and TypeSpec tools.",
     inputSchema: {
       cwd: z
         .string()
