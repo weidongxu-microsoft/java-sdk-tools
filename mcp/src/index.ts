@@ -34,7 +34,7 @@ server.registerTool(
     inputSchema: {
       cwd: z
         .string()
-        .describe("The absolute path to the current working directory"),
+        .describe("The absolute path to the current workspace directory"),
       tspConfigUrl: z
         .string()
         .describe(
