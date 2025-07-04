@@ -1,12 +1,13 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
-import { spawnAsync } from "./utils/index.js";
+import { findAzureSdkRoot, spawnAsync } from "./utils/index.js";
 
 export async function initJavaSdk(
-  rootDir: string,
+  cwd: string,
   tspConfigUrl: string,
 ): Promise<CallToolResult> {
   try {
-    process.chdir(rootDir);
+    let rootDirectory: string = await findAzureSdkRoot(cwd);
+    process.chdir(rootDirectory);
 
     // Run the Java SDK generation command
     const generateResult = await spawnAsync(
