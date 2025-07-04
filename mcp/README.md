@@ -20,7 +20,7 @@ This MCP server provides the following tools:
 
 Before using this MCP server, ensure you have:
 
-1. **Project Structure** - A directory containing `tsp-location.yaml`, open in this directory, e.g. `/sdk/batch/azure-compute-batch`.
+1. **Project Structure** - The tools should be run in a directory containing `tsp-location.yaml`, open in this directory, e.g. `/sdk/batch/azure-compute-batch`.
 2. **Nodejs** installed.
 
 ## Installation
