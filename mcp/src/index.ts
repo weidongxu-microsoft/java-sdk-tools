@@ -34,7 +34,11 @@ server.registerTool(
       rootDirectory: z
         .string()
         .describe("The absolute path to the directory of the workspace"),
-      tspConfigUrl: z.string().describe("The URL to the tspconfig.yaml file, Make sure you ask for the correct URL containing commit id, not branch name."),
+      tspConfigUrl: z
+        .string()
+        .describe(
+          "The URL to the tspconfig.yaml file, Make sure you ask for the correct URL containing commit id, not branch name.",
+        ),
     },
     annotations: {
       title: "Initialize Java SDK",
@@ -169,11 +173,6 @@ server.registerTool(
         .describe(
           "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
         ),
-      rootDirectory: z
-        .string()
-        .describe(
-          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
-        ),
     },
     annotations: {
       title: "Sync Java SDK",
@@ -197,11 +196,6 @@ server.registerTool(
         .string()
         .describe(
           "The absolute path to the directory for the target service submodule, where the tsp-location.yaml is located",
-        ),
-      rootDirectory: z
-        .string()
-        .describe(
-          "The absolute path to the azure-sdk-for-java directory, where the moduleDirectory is a submodule of it",
         ),
     },
     annotations: {

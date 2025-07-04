@@ -1,6 +1,5 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
-import { V } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
 export async function buildJavaSdk(
   rootDir: string,
@@ -9,7 +8,6 @@ export async function buildJavaSdk(
   artifactId: string,
 ): Promise<CallToolResult> {
   try {
-
     process.chdir(rootDir);
 
     const mvnCmd = process.platform === "win32" ? "mvn.cmd" : "mvn";

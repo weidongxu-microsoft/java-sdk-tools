@@ -6,7 +6,6 @@ export async function initJavaSdk(
   tspConfigUrl: string,
 ): Promise<CallToolResult> {
   try {
-
     process.chdir(rootDir);
 
     // Run the Java SDK generation command
