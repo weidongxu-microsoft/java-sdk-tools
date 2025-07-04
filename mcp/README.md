@@ -6,15 +6,15 @@ A Model Context Protocol (MCP) server that provides comprehensive tools for gene
 
 This MCP server provides the following tools:
 
-1. **init_java_sdk** - Initialize tsp-location.yaml for Java SDK from a tspconfig.yaml URL
-2. **sync_java_sdk** - Synchronize/Download TypeSpec source for Java SDK
-3. **generate_java_sdk** - Generate or update Java SDK from TypeSpec definitions
-4. **clean_java_source** - Clean Java source files in the SDK directory
-5. **build_java_sdk** - Build the Java SDK for Azure services
-6. **get_java_sdk_changelog** - Get changelog for the Java SDK
-7. **instruction_migrate_typespec** - Get instructions for migrating from Swagger to TypeSpec
-8. **update_client_name** - Update client names in both TypeSpec and generated Java SDK
-9. **prepare_java_sdk_environment** - Get step-by-step environment setup instructions
+1. **init_java_sdk** - Initialize tsp-location.yaml configuration for Java SDK from a TypeSpec configuration URL
+2. **sync_java_sdk** - Download and synchronize TypeSpec source files for Java SDK generation
+3. **generate_java_sdk** - Generate or update Java SDK code from TypeSpec definitions
+4. **clean_java_source** - Clean and remove generated Java source files from SDK directory
+5. **build_java_sdk** - Compile and build the Java SDK with Maven for Azure services
+6. **get_java_sdk_changelog** - Generate and retrieve changelog information for the Java SDK
+7. **instruction_migrate_typespec** - Provide step-by-step instructions for migrating from Swagger to TypeSpec
+8. **update_client_name** - Guide through updating client class and property names in TypeSpec and Java SDK
+9. **prepare_java_sdk_environment** - Provide environment setup instructions and dependency requirements
 
 ## Prerequisites
 
