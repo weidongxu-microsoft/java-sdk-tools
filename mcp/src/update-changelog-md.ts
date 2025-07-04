@@ -1,8 +1,11 @@
 import path from "path";
-import { findAzureSdkRoot, findModuleDirectory } from "./utils";
-import { getJavaSdkChangelogJson } from "./java-sdk-changelog";
+import {
+  findAzureSdkRoot,
+  findModuleDirectory,
+} from "./utils/sdk-directory.js";
+import { getJavaSdkChangelogJson } from "./java-sdk-changelog.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
-import { promises as fs } from "fs";
+import * as fs from "fs";
 
 export async function updateChangelogMd(
   jarPath: string,
@@ -21,9 +24,9 @@ export async function updateChangelogMd(
     );
     const changelogMd = changelogJson?.changelog;
     if (changelogMd) {
-      const oldChangelog = await fs.readFile(changelogMdPath, "utf8");
+      const oldChangelog = await fs.promises.readFile(changelogMdPath, "utf8");
       const updatedChangelog = updateChangelogText(oldChangelog, changelogMd);
-      await fs.writeFile(changelogMdPath, updatedChangelog, "utf8");
+      await fs.promises.writeFile(changelogMdPath, updatedChangelog, "utf8");
     }
     return {
       content: [
@@ -31,7 +34,7 @@ export async function updateChangelogMd(
           type: "text",
           text: changelogMd
             ? "✅ CHANGELOG.md updated successfully!"
-            : "No changelog",
+            : "CHANGELOG.md does not need to be updated, as no change was found.",
         },
       ],
     };
@@ -71,7 +74,6 @@ function updateChangelogText(
         if (line.startsWith("### ")) {
           foundFirstVersionSubSections = true;
           newLines.push(...newChangelogLines);
-          newLines.push("");
         } else {
           newLines.push(line);
         }

@@ -1,5 +1,5 @@
 import path from "path";
-import { promises as fs } from "fs";
+import * as fs from "fs";
 
 export async function findAzureSdkRoot(
   moduleDirectoryPath: string,
@@ -46,7 +46,7 @@ export async function findModuleDirectory(dir: string): Promise<string> {
 
 export async function checkFileExistence(filePath: string): Promise<boolean> {
   try {
-    await fs.stat(filePath);
+    await fs.promises.stat(filePath);
     return true;
   } catch (error) {
     if (error) {

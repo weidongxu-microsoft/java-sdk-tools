@@ -78,7 +78,9 @@ export async function getJavaSdkChangelogJson(
 
     const groupIdPath = groupId.replace(/\./g, "/");
     const metadataUrl = `${MAVEN_HOST}${groupIdPath}/${artifactId}/maven-metadata.xml`;
-    const metadataResponse = await axios.get(metadataUrl);
+    const metadataResponse = await axios.get(metadataUrl, {
+      validateStatus: () => true,
+    });
     if (metadataResponse.status !== 200) {
       // likely lib is not released to Maven
       return undefined;
