@@ -34,7 +34,7 @@ export async function generateJavaSdk(
         result += `\nErrors:\n${generateResult.stderr}\n`;
       }
 
-      result += `\nPlease check the above output for details on the failure. If it complains missing Java environment, please ask for preparing environment.\n If it complains missing tsp-location.yaml, ask user for the tspconfig.yaml url and call init java sdk tool with the url.\n`;
+      result += `\nPlease check the above output for details on the failure. If it complains missing Java environment, please ask for preparing environment.\n`;
     }
 
     return {
