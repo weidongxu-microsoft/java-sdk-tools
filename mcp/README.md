@@ -20,7 +20,7 @@ This MCP server provides the following tools:
 
 Before using this MCP server, ensure you have:
 
-1. **Project Structure** - A directory containing `tsp-location.yaml`, open in this directory.
+1. **Project Structure** - A directory containing `tsp-location.yaml`, open in this directory, e.g. `/sdk/batch/azure-compute-batch`.
 2. **Nodejs** installed.
 
 ## Installation
@@ -45,7 +45,7 @@ Open the service directory that contains `tsp-location.yaml` in VSCode. This sho
 
 Make sure the directory you open contains the `tsp-location.yaml` file, as this is where the MCP tools will operate.
 
-Create `.vscode/` folder in the directory
+Create `.vscode/` folder in the directory.
 
 ### Step 1: Add Server Configuration
 
@@ -63,7 +63,7 @@ Add the following configuration to your `.vscode/mcp.json` file:
 }
 ```
 
-Replace `path/to/your/mcp/dist/index.js` with the actual absolute path to your compiled MCP server.
+Replace `path/to/your/mcp/dist/index.js` with the actual absolute path to your compiled MCP server. (Refer to [Installation](https://github.com/haolingdong-msft/java-sdk-tools/blob/main/mcp/README.md#installation) section to install and build the MCP server.)
 
 ### Step 2: Restart VSCode
 
@@ -112,7 +112,7 @@ If the MCP server isn't working:
 Here are some example prompts you can use with GitHub Copilot to interact with the Java SDK tools:
 
 ### Basic SDK Operations
-- `generate java sdk`
+- `update java sdk`
 - `build java sdk`
 - `clean java source`
 

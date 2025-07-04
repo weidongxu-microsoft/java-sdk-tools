@@ -18,6 +18,58 @@ export async function getJavaSdkChangelog(
   let tempDir: string | null = null;
 
   try {
+    const changelogJson = await getJavaSdkChangelogJson(
+      cwd,
+      jarPath,
+      groupId,
+      artifactId,
+    );
+    return {
+      content: [
+        {
+          type: "text",
+          text: changelogJson ? changelogJson.changelog : "No changelog",
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Unexpected error during SDK changelog: ${error instanceof Error ? error.message : String(error)}`,
+        },
+      ],
+    };
+  } finally {
+    // Clean up temporary directory
+    if (tempDir) {
+      try {
+        await rm(tempDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        console.error(
+          `Failed to clean up temporary directory: ${tempDir}`,
+          cleanupError,
+        );
+      }
+    }
+  }
+}
+
+export interface Changelog {
+  changelog: string;
+  breakingChanges: string[];
+}
+
+export async function getJavaSdkChangelogJson(
+  repoRoot: string,
+  jarPath: string,
+  groupId: string,
+  artifactId: string,
+): Promise<Changelog | undefined> {
+  let tempDir: string | null = null;
+
+  try {
     const xmlParser = new XMLParser({ ignoreAttributes: false });
     const mvnCmd = process.platform === "win32" ? "mvn.cmd" : "mvn";
 
@@ -26,7 +78,13 @@ export async function getJavaSdkChangelog(
 
     const groupIdPath = groupId.replace(/\./g, "/");
     const metadataUrl = `${MAVEN_HOST}${groupIdPath}/${artifactId}/maven-metadata.xml`;
-    const metadataResponse = await axios.get(metadataUrl);
+    const metadataResponse = await axios.get(metadataUrl, {
+      validateStatus: () => true,
+    });
+    if (metadataResponse.status !== 200) {
+      // likely lib is not released to Maven
+      return undefined;
+    }
     const metadataXml = xmlParser.parse(metadataResponse.data);
     // take latest stable version, if none, take latest (beta) version
     let releasedSdkVersion = metadataXml.metadata.versioning.latest;
@@ -58,7 +116,7 @@ export async function getJavaSdkChangelog(
         "exec:java",
         "-q",
         "-f",
-        cwd + "/eng/automation/changelog/pom.xml",
+        repoRoot + "/eng/automation/changelog/pom.xml",
         `-DOLD_JAR="${releasedJarFilePath}"`,
         `-DNEW_JAR="${jarPath}"`,
       ],
@@ -69,28 +127,7 @@ export async function getJavaSdkChangelog(
       },
     );
     const changelogOutput = changelogResult.stdout;
-
-    // TODO: Add your changelog generation logic here
-    // Use tempDir for any temporary files needed during processing
-
-    // Placeholder return for now
-    return {
-      content: [
-        {
-          type: "text",
-          text: changelogOutput,
-        },
-      ],
-    };
-  } catch (error) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Unexpected error during SDK changelog: ${error instanceof Error ? error.message : String(error)}`,
-        },
-      ],
-    };
+    return JSON.parse(changelogOutput);
   } finally {
     // Clean up temporary directory
     if (tempDir) {
