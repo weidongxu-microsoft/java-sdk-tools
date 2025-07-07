@@ -2,29 +2,56 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { findAzureSdkRoot, spawnAsync } from "./utils/index.js";
 
 export async function initJavaSdk(
-  cwd: string,
-  tspConfigUrl: string,
+  localTspConfigPath?: string,
+  remoteTspConfigUrl?: string,
 ): Promise<CallToolResult> {
   try {
-    let rootDirectory: string = await findAzureSdkRoot(cwd);
+    let rootDirectory: string = await findAzureSdkRoot(process.cwd());
     process.chdir(rootDirectory);
 
     // Run the Java SDK generation command
-    const generateResult = await spawnAsync(
-      "tsp-client",
-      [
-        "init",
-        "--debug",
-        "--skip-sync-and-generate",
-        "--tsp-config",
-        tspConfigUrl,
-      ],
-      {
-        cwd: process.cwd(),
-        shell: true, // Use shell to allow tsp-client command
-        timeout: 600000, // 10 minute timeout
-      },
-    );
+    let generateResult;
+    if (localTspConfigPath) {
+      // tsp-client init --debug --tsp-config C:\workspace\azure-rest-api-specs\specification\communication\Communication.Messages\tspconfig.yaml  --commit 123 --repo Azure/azure-rest-api-specs --local-spec-repo C:\workspace\azure-rest-api-specs\specification\communication\Communication.Messages\tspconfig.yaml --save-inputs
+      generateResult = await spawnAsync(
+        "tsp-client",
+        [
+          "init",
+          "--debug",
+          "--tsp-config",
+          localTspConfigPath,
+          "--local-spec-repo",
+          localTspConfigPath,
+          "--commit",
+          "123",
+          "--save-inputs"
+        ],
+        {
+          cwd: process.cwd(),
+          shell: true, // Use shell to allow tsp-client command
+          timeout: 600000, // 10 minute timeout
+        },
+      );
+    } else if (remoteTspConfigUrl) {
+      generateResult = await spawnAsync(
+        "tsp-client",
+        ["init", "--debug", "--tsp-config", remoteTspConfigUrl, "--save-inputs"],
+        {
+          cwd: process.cwd(),
+          shell: true, // Use shell to allow tsp-client command
+          timeout: 600000, // 10 minute timeout
+        },
+      );
+    } else {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "No tspconfig.yaml provided, please provide either local or remote tspconfig.yaml.",
+          },
+        ],
+      };
+    }
 
     let result = `Java SDK Generation Results:\n\n`;
 

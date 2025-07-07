@@ -10,7 +10,6 @@ import fs from "fs";
 const MAVEN_HOST = "https://repo1.maven.org/maven2/";
 
 export async function getJavaSdkChangelog(
-  cwd: string,
   jarPath: string,
   groupId: string,
   artifactId: string,
@@ -19,9 +18,9 @@ export async function getJavaSdkChangelog(
 
   try {
     // make sure cwd is the root directory of the Azure SDK for Java
-    cwd = await findAzureSdkRoot(cwd);
+    let rootDirectory = await findAzureSdkRoot(process.cwd());
     const changelogJson = await getJavaSdkChangelogJson(
-      cwd,
+      rootDirectory,
       jarPath,
       groupId,
       artifactId,
