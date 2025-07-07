@@ -30,13 +30,15 @@ server.registerTool(
   "init_java_sdk",
   {
     description:
-      "Initialize the tsp-location.yaml for generating Java SDK, from URL to tspconfig.yaml. Make sure you ask for the correct url containing commit id, not branch name.",
+      "Initialize the tsp-location.yaml for generating Java SDK, from local path or remote URL to tspconfig.yaml. Always ask for the local path or remote URL. Make sure you ask for the remote URL containing commit id, not branch name.",
     inputSchema: {
-      cwd: z
+      localTspConfigPath: z
         .string()
-        .describe("The absolute path to the current workspace directory"),
+        .optional()
+        .describe("The local path to the tspconfig.yaml file"),
       tspConfigUrl: z
         .string()
+        .optional()
         .describe(
           "The URL to the tspconfig.yaml file. Make sure you ask for the correct URL containing commit id, not branch name. e.g. https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml",
         ),
@@ -47,7 +49,10 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("init_java_sdk");
-    const result = await initJavaSdk(args.cwd, args.tspConfigUrl);
+    const result = await initJavaSdk(
+      args.localTspConfigPath,
+      args.tspConfigUrl,
+    );
     return result;
   },
 );
@@ -119,7 +124,6 @@ server.registerTool(
     description:
       "Get the changelog for a service sub module whose groupId starts with `com.azure`. The tool takes the root directory, jarPath, groupId and artifactId as input parameters.",
     inputSchema: {
-      cwd: z.string().describe("The current working directory"),
       jarPath: z
         .string()
         .describe(
@@ -135,7 +139,6 @@ server.registerTool(
   async (args) => {
     logToolCall("get_java_sdk_changelog");
     const result = await getJavaSdkChangelog(
-      args.cwd,
       args.jarPath,
       args.groupId,
       args.artifactId,
@@ -197,13 +200,16 @@ server.registerTool(
   "sync_java_sdk",
   {
     description:
-      "Synchronize/Download the TypeSpec source for a target service to generate Java SDK from, the tool takes the module directory as input parameter. Make sure there is a tsp-location.yaml in the module directory, if not, ask to initialize java sdk first.",
+      "Synchronize/Download the TypeSpec source for a target service to generate Java SDK from. Always ask user to provide local tspconfig.yaml path or remote tspconfig.yaml url. The tool takes local tspconfig.yaml path or remote tspconfig.yaml url as input parameter.",
     inputSchema: {
-      moduleDirectory: z
+      localTspConfigPath: z
         .string()
-        .describe(
-          "The absolute path to the directory containing tsp-location.yaml, e.g. C:\\workspace\\azure-sdk-for-java\\sdk\\communication\\azure-communication-messages",
-        ),
+        .optional()
+        .describe("The local path to the tspconfig.yaml file. e.g. C:\\workspace\\azure-rest-api-specs\\specification\\communication\\Communication.Messages\\tspconfig.yaml"),
+      remoteTspConfigUrl: z
+        .string()
+        .optional()
+        .describe("The remote URL to the tspconfig.yaml file. The URL should contain commit id instead of branch name. e.g. https://github.com/Azure/azure-rest-api-specs/blob/dee71463cbde1d416c47cf544e34f7966a94ddcb/specification/contosowidgetmanager/Contoso.WidgetManager/tspconfig.yaml"),
     },
     annotations: {
       title: "Sync Java SDK",
@@ -211,7 +217,10 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("sync_java_sdk");
-    const result = await generateJavaSdk(args.moduleDirectory, false);
+    const result = await initJavaSdk(
+      args.localTspConfigPath,
+      args.remoteTspConfigUrl,
+    );
     return result;
   },
 );
@@ -221,12 +230,12 @@ server.registerTool(
   "generate_java_sdk",
   {
     description:
-      "Don't call prepare environment and build java sdk tools before calling this tool. Generate or update Java SDK for a service from configuration in tsp-location.yaml, make sure there is already a tsp-location.yaml exists in the service module directory, if not, ask to initialize java sdk first. And make sure there is a directory named 'TempTypeSpecFiles' in the current working directory, if the directory is not present, tell the user to synchronize the TypeSpec source for Java SDK first. The tool takes the module directory as input parameter.",
+      "Generate SDK from TypeSpec source from 'TempTypeSpecFiles' for a target service module. If there is a directory named 'TempTypeSpecFiles' in the current working directory, call this tool directly. If the directory is not present, ask user whether to generate from local TypeSpec source or remote TypeSpec source. If the user wants to generate from local TypeSpec source, ask for local path to tspconfig.yaml. If the user wants to generate from remote TypeSpec source, ask for remote tspconfig.yaml url. Then call the tool to sync sdk with proper input parameters before calling this tool to generate sdk.",
     inputSchema: {
-      moduleDirectory: z
+      cwd: z
         .string()
         .describe(
-          "The absolute path to the directory containing tsp-location.yaml, e.g. C:\\workspace\\azure-sdk-for-java\\sdk\\communication\\azure-communication-messages",
+          "The absolute path to the current working directory which contains the 'TempTypeSpecFiles' directory with TypeSpec source files. e.g. C:\\workspace\\azure-sdk-for-java\\sdk\\communication\\communication-messages",
         ),
     },
     annotations: {
@@ -235,7 +244,10 @@ server.registerTool(
   },
   async (args) => {
     logToolCall("generate_java_sdk");
-    const result = await generateJavaSdk(args.moduleDirectory, true);
+    const result = await generateJavaSdk(
+      args.cwd,
+      true
+    );
     return result;
   },
 );
