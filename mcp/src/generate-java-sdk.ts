@@ -1,6 +1,7 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { checkFileExistence, spawnAsync } from "./utils/index.js";
 import { join } from "path";
+import { rm } from "fs/promises";
 
 export async function generateJavaSdk(
   typespecSourceDirectory: string,
@@ -8,13 +9,14 @@ export async function generateJavaSdk(
   try {
     process.chdir(typespecSourceDirectory);
 
+    // Determine the TypeSpec source file to use
     const tspSource = (await checkFileExistence(
       join(typespecSourceDirectory, "client.tsp"),
     ))
       ? "client.tsp"
       : "main.tsp";
 
-    // Run the Java SDK generation command
+    // Install latest Java emitter
     const installEmitterResult = await spawnAsync(
       "npm",
       ["install", "@azure-tools/typespec-java@latest"],
@@ -25,6 +27,18 @@ export async function generateJavaSdk(
       },
     );
 
+    // Delete the existing java-sdk folder
+    const javaSdkExists = await checkFileExistence(
+      join(typespecSourceDirectory, "java-sdk"),
+    );
+    if (javaSdkExists) {
+      await rm(join(typespecSourceDirectory, "java-sdk"), {
+        recursive: true,
+        force: true,
+      });
+    }
+
+    // Run the Java SDK generation command
     const generateResult = await spawnAsync(
       "tsp",
       [
