@@ -2,6 +2,32 @@
 
 A Model Context Protocol (MCP) server that provides comprehensive tools for generating, building, and managing Java SDKs from TypeSpec definitions for Azure services. This server integrates with GitHub Copilot and other MCP-compatible clients to streamline the Azure SDK development workflow.
 
+## Sample mcp.json
+
+```json
+{
+	"servers": {
+		"java-sdk-tools": {
+			"command": "pwsh",
+			"args": [
+				"c:/github_lab/java-sdk-tools/mcp/azure-sdk-java-mcp.ps1"
+			],
+			"type": "stdio",
+			"version": "0.0.1"
+		}
+	},
+	"inputs": []
+}
+```
+
+## Usage
+
+Use the `#mitigateBreaks` tool in azure-rest-api-specs repository.
+
+It is recommended to put the "main.tsp" or "client.tsp" as context. They are the TypeSpec source for the Java SDK.
+
+It may help to disable the "azure-sdk-mcp" tool.
+
 ## Features
 
 This MCP server provides the following tools:
