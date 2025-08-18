@@ -1,7 +1,7 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 
 export async function brownfieldMigration(): Promise<CallToolResult> {
-    const cookbook = `Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
+  const cookbook = `Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
 DO NOT SKIP STEP 3, IN ANY CONDITION.
 
@@ -37,12 +37,12 @@ DO NOT SKIP STEP 3, IN ANY CONDITION.
 9. Go to step 5.
 `;
 
-    return {
-        content: [
-            {
-                type: "text",
-                text: cookbook,
-            },
-        ],
-    };
+  return {
+    content: [
+      {
+        type: "text",
+        text: cookbook,
+      },
+    ],
+  };
 }
