@@ -1,40 +1,57 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 
 export async function brownfieldMigration(): Promise<CallToolResult> {
-  const cookbook = `Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
+  const cookbook = `# Instruction to migitate breaks for Java SDK after migrate to TypeSpec
 
-DO NOT SKIP STEP 3, IN ANY CONDITION.
+Only modify "client.tsp" and "tspconfig.yaml". Do not modify any other files.
+Do read the other tsp files for context.
 
-1. Initiate the Java SDK with the given URL to the "tspconfig.yaml" file.
-   Use the tool to initiate the Java SDK, from tspconfig.yaml URL. This tool create a "tsp-location.yaml" file.
+Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
-2. Find the path to SDK module and its "pom.xml" file.
-   Run "git status --porcelain" to find the "tsp-location.yaml" file. The path to the SDK module is the directory containing the "tsp-location.yaml" file. The "pom.xml" file is located in the same directory.
+1. Use the #generateJavaSdk tool to generate Java SDK, based on current TypeSpec.
 
-3. Clean the Java source in SDK module.
-   Delete folder "src/main" in the SDK module. Delete folder "src/samples/**/generated" and "src/test/**/generated" in the SDK module.
+2. Use the #buildJavaSdk tool to build Jar.
 
-4. Generate Java SDK from the TypeSpec source.
-   Use the tool to generate the Java SDK. This will generate the Java SDK from existing TypeSpec source in "TempTypeSpecFiles" folder.
+3. Use the #getJavaSdkChangelog tool to retrieve the changelog for the Java SDK, compared to its last stable version.
 
-5. Build the Java SDK.
-   Use the tool to build the Java SDK. This will compile the Java code and generate the necessary artifacts, e.g. JAR file.
+4. Follow "Guide to mitigate breaks", modify "client.tsp" or "tspconfig.yaml", to mitigate breaks.
 
-6. Get the changelog for the Java SDK.
-   Use the tool to get the changelog for the Java SDK. This will produce a changelog in markdown format.
+5. If there is no change to "client.tsp" or "tspconfig.yaml" in Step 4, then the migration is complete.
 
-7. Review the changelog from step 6. Find possible places that can be fixed by renaming a model.
-   DO NOT read "CHANGELOG.md" in the folder of the Java SDK module. It is for released library, and not suitable for the migration process.
-   The changelog is in JSON format. Focus on "breakingChanges" section and "newFeature" section.
-   Find possible places that can be fixed by renaming a model. For example, if a model with name "*Ip*" is removed, and a model with name "*IP*" is added, this can be fixed by rename to "*IP*" model to "*Ip*".
-   If there is no such candidates, the migration is completed, and you can skip all the next steps.
+5. Run "tsp compile ." then "tsp format .". If there is error, try fix "client.tsp".
 
-8. Apply the changes to the TypeSpec source.
-   Use the tool to apply the rename changes to the TypeSpec source, so that it can keep the original naming.
-   Ask it to e.g. "Update client name, rename model from <name_after_codegen> to <name_before_codegen>".
-   Java SDK is following the convention of e.g. "username", "hostname", "Ip", "Id". Hence, the tool should keep using these naming patterns.
+6. Use git to commit the changed "client.tsp" or "tspconfig.yaml" file.
 
-9. Go to step 5.
+7. Go to Step 1, iterate this process one more time, to see if there are any further changes needed.
+
+
+# Guide to mitigate breaks
+
+Focus on "Breaking Changes" and "Features Added" section.
+
+- Pattern: "models.###ListResult" was removed.
+  Solution: This is expected, no action needed.
+
+- Pattern: "models.Operation###" was modified / removed.
+  Solution: This is expected, no action needed.
+
+- Pattern: "models.<ModelName>" was removed, and there is a silimiar "models.<NewModelName>" was added.
+  Solution: Edit "client.tsp", add line
+   \`\`\`typespec
+@@clientName(<TypeSpecNamespace>.<NewModelName>,
+  "<ModelName>",
+  "java"
+);
+  \`\`\`
+
+- Pattern: "<PropertyName>()" was removed, and there is a silimiar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
+  Solution: Edit "client.tsp", add line
+   \`\`\`typespec
+@@clientName(<TypeSpecNamespace>.<ModelName>.<NewPropertyName>,
+  "<PropertyName>",
+  "java"
+);
+  \`\`\`
 `;
 
   return {

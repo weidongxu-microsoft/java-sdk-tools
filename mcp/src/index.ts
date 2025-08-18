@@ -125,19 +125,19 @@ server.registerTool(
 //     },
 // );
 
-// Tool: instruction_migrate_typespec
+// Tool: mitigateBreaks
 server.registerTool(
-  "instruction_migrate_typespec",
+  "mitigateMigrationBreaks",
   {
     description:
-      "Provides step-by-step instructions for generating a Java SDK after migrating from Swagger (OpenAPI) to TypeSpec. Use this tool to understand the migration workflow and required actions.",
+      "Provides step-by-step instructions for mitigating breaks for Java SDK after migrating from Swagger (OpenAPI) to TypeSpec. Use this tool to understand the migration workflow and required actions.",
     inputSchema: {},
     annotations: {
-      title: "TypeSpec Migration Instructions",
+      title: "Mitigate Breaks for TypeSpec Migration",
     },
   },
   async () => {
-    logToolCall("instruction_migrate_typespec");
+    logToolCall("mitigateMigrationBreaks");
     return await brownfieldMigration();
   },
 );
