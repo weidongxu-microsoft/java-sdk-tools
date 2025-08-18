@@ -8,35 +8,37 @@ param(
 )
 
 function Show-Help {
-    Write-Host "Azure SDK Java MCP Server Launcher" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Usage: .\azure-sdk-java-mcp.ps1 [options]"
-    Write-Host ""
-    Write-Host "Options:"
-    Write-Host "  -SkipInstall    Skip npm install step"
-    Write-Host "  -SkipBuild      Skip npm run build step"
-    Write-Host "  -Dev            Run in development mode (npm run dev)"
-    Write-Host "  -Help           Show this help message"
-    Write-Host ""
-    Write-Host "Examples:"
-    Write-Host "  .\azure-sdk-java-mcp.ps1                    # Full build and start"
-    Write-Host "  .\azure-sdk-java-mcp.ps1 -SkipInstall       # Skip install, build and start"
-    Write-Host "  .\azure-sdk-java-mcp.ps1 -Dev               # Development mode with watch"
-    Write-Host ""
+    Write-Error "Azure SDK Java MCP Server Launcher"
+    Write-Error ""
+    Write-Error "Usage: .\azure-sdk-java-mcp.ps1 [options]"
+    Write-Error ""
+    Write-Error "Options:"
+    Write-Error "  -SkipInstall    Skip npm install step"
+    Write-Error "  -SkipBuild      Skip npm run build step"
+    Write-Error "  -Dev            Run in development mode (npm run dev)"
+    Write-Error "  -Help           Show this help message"
+    Write-Error ""
+    Write-Error "Examples:"
+    Write-Error "  .\azure-sdk-java-mcp.ps1                    # Full build and start"
+    Write-Error "  .\azure-sdk-java-mcp.ps1 -SkipInstall       # Skip install, build and start"
+    Write-Error "  .\azure-sdk-java-mcp.ps1 -Dev               # Development mode with watch"
+    Write-Error ""
 }
+
+$PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;
 
 if ($Help) {
     Show-Help
     exit 0
 }
 
-# Set error action preference
-$ErrorActionPreference = "Stop"
+# # Set error action preference
+# $ErrorActionPreference = "Stop"
 
 try {
     # Get the script directory
     $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-    Write-Host "Working directory: $ScriptDir" -ForegroundColor Cyan
+    Write-Error "Working directory: $ScriptDir"
     
     # Change to the script directory
     Set-Location $ScriptDir
@@ -50,7 +52,7 @@ try {
     # Check if Node.js is available
     try {
         $nodeVersion = node --version
-        Write-Host "Node.js version: $nodeVersion" -ForegroundColor Green
+        Write-Error "Node.js version: $nodeVersion"
     } catch {
         Write-Error "Node.js is not installed or not in PATH. Please install Node.js first."
         exit 1
@@ -59,7 +61,7 @@ try {
     # Check if npm is available
     try {
         $npmVersion = npm --version
-        Write-Host "npm version: $npmVersion" -ForegroundColor Green
+        Write-Error "npm version: $npmVersion"
     } catch {
         Write-Error "npm is not installed or not in PATH. Please install npm first."
         exit 1
@@ -67,45 +69,45 @@ try {
     
     # Step 1: npm install (unless skipped)
     if (-not $SkipInstall) {
-        Write-Host "`nRunning npm install..." -ForegroundColor Yellow
-        npm install
+        Write-Error "`nRunning npm install..."
+        npm install -s
         if ($LASTEXITCODE -ne 0) {
             Write-Error "npm install failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
         }
-        Write-Host "npm install completed successfully" -ForegroundColor Green
+        Write-Error "npm install completed successfully"
     } else {
-        Write-Host "`nSkipping npm install..." -ForegroundColor Yellow
+        Write-Error "`nSkipping npm install..."
     }
     
     # Step 2: npm run clean and build (unless skipped or in dev mode)
     if (-not $SkipBuild -and -not $Dev) {
-        Write-Host "`nRunning npm run clean..." -ForegroundColor Yellow
-        npm run clean
+        Write-Error "`nRunning npm run clean..."
+        npm run clean -s
         if ($LASTEXITCODE -ne 0) {
             Write-Error "npm run clean failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
         }
-        Write-Host "npm run clean completed successfully" -ForegroundColor Green
+        Write-Error "npm run clean completed successfully"
         
-        Write-Host "`nRunning npm run build..." -ForegroundColor Yellow
-        npm run build
+        Write-Error "`nRunning npm run build..."
+        npm run build -s
         if ($LASTEXITCODE -ne 0) {
             Write-Error "npm run build failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
         }
-        Write-Host "npm run build completed successfully" -ForegroundColor Green
+        Write-Error "npm run build completed successfully"
     } elseif ($Dev) {
-        Write-Host "`nSkipping clean and build for development mode..." -ForegroundColor Yellow
+        Write-Error "`nSkipping clean and build for development mode..."
     } else {
-        Write-Host "`nSkipping npm run clean and build..." -ForegroundColor Yellow
+        Write-Error "`nSkipping npm run clean and build..."
     }
     
     # Step 3: Start the server
     if ($Dev) {
-        Write-Host "`nStarting MCP server in development mode..." -ForegroundColor Yellow
-        Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Cyan
-        npm run start
+        Write-Error "`nStarting MCP server in development mode..."
+        Write-Error "Press Ctrl+C to stop the server"
+        npm run start -s
     } else {
         # Check if dist directory exists
         if (-not (Test-Path "dist")) {
@@ -119,9 +121,9 @@ try {
             exit 1
         }
         
-        Write-Host "`nStarting MCP server..." -ForegroundColor Yellow
-        Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Cyan
-        npm run start
+        Write-Error "`nStarting MCP server..."
+        Write-Error "Press Ctrl+C to stop the server"
+        npm run start -s
     }
 } catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
