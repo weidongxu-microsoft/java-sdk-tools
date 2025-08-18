@@ -17,7 +17,6 @@ export async function updateChangelogMd(
     const moduleDirectoryPath = await findModuleDirectory(jarPath);
     const changelogMdPath = path.join(moduleDirectoryPath, "CHANGELOG.md");
     const changelogJson = await getJavaSdkChangelogJson(
-      repoRoot,
       jarPath,
       groupId,
       artifactId,

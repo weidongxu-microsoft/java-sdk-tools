@@ -1,10 +1,11 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
-import { findAzureSdkRoot, spawnAsync } from "./utils/index.js";
+import { spawnAsync } from "./utils/index.js";
 import { mkdtemp, rm } from "fs/promises";
-import { join } from "path";
+import { dirname, join } from "path";
 import { tmpdir } from "os";
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
+import { fileURLToPath } from "url";
 import fs from "fs";
 
 const MAVEN_HOST = "https://repo1.maven.org/maven2/";
@@ -17,10 +18,7 @@ export async function getJavaSdkChangelog(
   let tempDir: string | null = null;
 
   try {
-    // make sure cwd is the root directory of the Azure SDK for Java
-    let rootDirectory = await findAzureSdkRoot(process.cwd());
     const changelogJson = await getJavaSdkChangelogJson(
-      rootDirectory,
       jarPath,
       groupId,
       artifactId,
@@ -63,11 +61,12 @@ export interface Changelog {
 }
 
 export async function getJavaSdkChangelogJson(
-  repoRoot: string,
   jarPath: string,
   groupId: string,
   artifactId: string,
 ): Promise<Changelog | undefined> {
+  const mcpRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+
   let tempDir: string | null = null;
 
   try {
@@ -117,14 +116,14 @@ export async function getJavaSdkChangelogJson(
         "exec:java",
         "-q",
         "-f",
-        repoRoot + "/eng/automation/changelog/pom.xml",
+        join(mcpRoot, "changelog/pom.xml"),
         `-DOLD_JAR="${releasedJarFilePath}"`,
         `-DNEW_JAR="${jarPath}"`,
       ],
       {
         cwd: process.cwd(),
-        shell: true, // Use shell to allow tsp-client command
-        timeout: 600000, // 10 minute timeout
+        shell: true,
+        timeout: 600000,
       },
     );
     const changelogOutput = changelogResult.stdout;

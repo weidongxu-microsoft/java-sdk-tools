@@ -76,7 +76,7 @@ server.registerTool(
       jarPath: z
         .string()
         .describe(
-          "Absolute path to the JAR file of the Java SDK, typically located in the `target` directory of the module.",
+          "Absolute path to the JAR file of the Java SDK, typically located in the `java-sdk/target` directory.",
         ),
       groupId: z
         .string()
