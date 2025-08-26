@@ -19,7 +19,7 @@ export async function generateJavaSdk(
     // Install latest Java emitter
     const installEmitterResult = await spawnAsync(
       "npm",
-      ["install", "@azure-tools/typespec-java@latest"],
+      ["install", "@azure-tools/typespec-java@latest", "--force"],
       {
         cwd: process.cwd(),
         shell: true,
