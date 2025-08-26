@@ -16,7 +16,19 @@ export async function generateJavaSdk(
       ? "client.tsp"
       : "main.tsp";
 
-    // Install latest Java emitter
+    // Update dependencies to latest
+    // This step is to make sure the packages here are compatible with the typespec-java emitter (to be installed in next step)
+    await spawnAsync(
+      "ncu",
+      ["-u"],
+      {
+        cwd: process.cwd(),
+        shell: true,
+        timeout: 600000,
+      },
+    );
+
+    // Install latest typespec-java emitter
     const installEmitterResult = await spawnAsync(
       "npm",
       ["install", "@azure-tools/typespec-java@latest", "--force"],

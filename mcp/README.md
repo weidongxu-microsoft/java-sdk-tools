@@ -74,6 +74,10 @@ This MCP server communicates over stdio and exposes the following tools (only th
 
 - Node.js (v20 or later recommended)
 - A compatible MCP client that can connect over stdio
+- Following npm packages installed globally:
+  - [ncu](https://www.npmjs.com/package/npm-check-updates)
+  - [typespec compiler](https://www.npmjs.com/package/@typespec/compiler)
+  - [tsp-client](https://github.com/Azure/azure-sdk-tools/tree/main/tools/tsp-client)
 - For build-related tools: a working Java/Maven environment when building generated Java SDKs
 
 ## Development

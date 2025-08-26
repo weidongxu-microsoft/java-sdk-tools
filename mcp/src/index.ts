@@ -182,7 +182,7 @@ server.registerTool(
       typespecSourceDirectory: z
         .string()
         .describe(
-          "The absolute path to the TypeSpec source files. The folder should contains a main.tsp file, and optionally a client.tsp file.",
+          "The absolute path to the TypeSpec source files. The folder should contains a tspconfig.yaml file, a main.tsp file, and optionally a client.tsp file.",
         ),
     },
     annotations: {

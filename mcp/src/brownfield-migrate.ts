@@ -4,6 +4,7 @@ export async function brownfieldMigration(): Promise<CallToolResult> {
   const cookbook = `# Instruction to migitate breaks for Java SDK after migrate to TypeSpec
 
 Only modify "client.tsp" and "tspconfig.yaml". Do not modify any other files.
+For "client.tsp", group the modifications at the end of the file.
 Do read the other tsp files for context.
 
 Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
@@ -35,13 +36,23 @@ Focus on "Breaking Changes" and "Features Added" section.
 - Pattern: "models.Operation###" was modified / removed.
   Solution: This is expected, no action needed.
 
+- Pattern: "<ServiceName>Manager was removed, and there is a similar "<NewServiceName>Manager" was added.
+  Severity: This is a breaking change that MUST be fixed.
+  Solution: Edit "tspconfig.yaml", modify or add line under "@azure-tools/typespec-java"
+  \`\`\`yaml
+    service-name: <Service Name>
+  \`\`\`
+  \`<Service Name>\` above should contain proper spaces.
+
 - Pattern: "models.<ModelName>" was removed, and there is a silimiar "models.<NewModelName>" was added.
+  Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "client.tsp", add line
   \`\`\`typespec
 @@clientName(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
   \`\`\`
 
 - Pattern: "<PropertyName>()" was removed, and there is a silimiar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
+  Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "client.tsp", add line
   \`\`\`typespec
 @@clientName(<TypeSpecNamespace>.<ModelName>.<NewPropertyName>, "<PropertyName>", "java");
@@ -54,9 +65,9 @@ Focus on "Breaking Changes" and "Features Added" section.
   \`\`\`
 
 - Pattern: "java.lang.Object" -> "com.azure.core.util.BinaryData"
-  Solution: Edit "tspconfig.yaml", add line
+  Solution: Edit "tspconfig.yaml", add line under "@azure-tools/typespec-java"
   \`\`\`yaml
-use-object-for-unknown: true  
+    use-object-for-unknown: true
   \`\`\`
 `;
 
