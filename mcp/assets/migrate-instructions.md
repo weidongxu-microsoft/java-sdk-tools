@@ -2,7 +2,8 @@
 
 Only modify "client.tsp" and "tspconfig.yaml". Do not modify any other files.
 For "client.tsp", group the modifications at the end of the file.
-Do read the other tsp files for context.
+Do read the other ".tsp" files for context.
+Do not read ".json" files.
 
 Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
@@ -44,14 +45,22 @@ Focus on "Breaking Changes" and "Features Added" section.
 - Pattern: "models.<ModelName>" was removed, and there is a silimiar "models.<NewModelName>" was added.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Check in tsp files, whether "<NewModelName>" is a model, or an interface.
-  If it is a model, edit "client.tsp", add line
-  ```typespec
-  @@clientName(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
-  ```
-  If it is an interface, edit "client.tsp", for each operation within this interface, add line
-  ```typespec
-  @@clientLocation(<TypeSpecNamespace>.<NewModelName>.<OperationName>, "<ModelName>", "java");
-  ```
+  1. If it is a model, edit "client.tsp", add line
+      ```typespec
+      @@clientName(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
+      ```
+  2. If it is an interface, edit "client.tsp", for each operation within this interface, add line
+      ```typespec
+      @@clientLocation(<TypeSpecNamespace>.<NewModelName>.<OperationName>, "<ModelName>", "java");
+      ```
+  3. If no model or interface found, check "back-compatible.tsp", search for lines like
+      ```typespec
+      @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<NewModelName>");
+      ```
+     If such `@@clientLocation` found in "back-compatible.tsp", edit "client.tsp", for each such line, add line in "client.tsp"
+      ```typespec
+      @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<ModelName>", "java");
+      ```
 
 - Pattern: "<PropertyName>()" was removed, and there is a silimiar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
   Severity: This is a breaking change that MUST be fixed.
