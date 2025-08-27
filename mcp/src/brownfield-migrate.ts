@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 export async function brownfieldMigration(): Promise<CallToolResult> {
   // The js file is under "dist" folder
   const mcpRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-  const instructionsMdPath = path.resolve(mcpRoot, "assets", "instructions.md");
+  const instructionsMdPath = path.resolve(mcpRoot, "assets", "migrate-instructions.md");
 
   const instructions = await readFile(instructionsMdPath, "utf-8");
 
