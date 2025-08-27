@@ -1,11 +1,12 @@
+import path from "path";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { spawnAsync } from "./utils/index.js";
 import { mkdtemp, rm } from "fs/promises";
-import { dirname, join } from "path";
 import { tmpdir } from "os";
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import fs from "fs";
+import { fileURLToPath } from "url";
 
 const MAVEN_HOST = "https://repo1.maven.org/maven2/";
 
@@ -65,7 +66,7 @@ export async function getJavaSdkChangelogJson(
   artifactId: string,
 ): Promise<Changelog | undefined> {
   // The js file is under "dist" folder
-  const mcpRoot = dirname(__dirname);
+  const mcpRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
   let tempDir: string | null = null;
 
@@ -74,7 +75,7 @@ export async function getJavaSdkChangelogJson(
     const mvnCmd = process.platform === "win32" ? "mvn.cmd" : "mvn";
 
     // Create temporary directory in system temp folder
-    tempDir = await mkdtemp(join(tmpdir(), "java-sdk-changelog-"));
+    tempDir = await mkdtemp(path.resolve(tmpdir(), "java-sdk-changelog-"));
 
     const groupIdPath = groupId.replace(/\./g, "/");
     const metadataUrl = `${MAVEN_HOST}${groupIdPath}/${artifactId}/maven-metadata.xml`;
@@ -102,7 +103,7 @@ export async function getJavaSdkChangelogJson(
     const jarResponse = await axios.get(jarUrl, {
       responseType: "arraybuffer",
     });
-    const releasedJarFilePath = join(tempDir, jarFileName);
+    const releasedJarFilePath = path.resolve(tempDir, jarFileName);
     const buffer = Buffer.from(jarResponse.data);
     await fs.promises.writeFile(releasedJarFilePath, buffer, { flag: "w" });
 
@@ -116,7 +117,7 @@ export async function getJavaSdkChangelogJson(
         "exec:java",
         "-q",
         "-f",
-        join(mcpRoot, "changelog/pom.xml"),
+        path.resolve(mcpRoot, "changelog/pom.xml"),
         `-DOLD_JAR="${releasedJarFilePath}"`,
         `-DNEW_JAR="${jarPath}"`,
       ],
