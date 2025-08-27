@@ -5,7 +5,6 @@ import { dirname, join } from "path";
 import { tmpdir } from "os";
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
-import { fileURLToPath } from "url";
 import fs from "fs";
 
 const MAVEN_HOST = "https://repo1.maven.org/maven2/";
@@ -65,7 +64,8 @@ export async function getJavaSdkChangelogJson(
   groupId: string,
   artifactId: string,
 ): Promise<Changelog | undefined> {
-  const mcpRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+  // The js file is under "dist" folder
+  const mcpRoot = dirname(__dirname);
 
   let tempDir: string | null = null;
 

@@ -15,7 +15,7 @@ export async function updateChangelogMd(
   try {
     const repoRoot = await findAzureSdkRoot(path.dirname(jarPath));
     const moduleDirectoryPath = await findModuleDirectory(jarPath);
-    const changelogMdPath = path.join(moduleDirectoryPath, "CHANGELOG.md");
+    const changelogMdPath = path.resolve(moduleDirectoryPath, "CHANGELOG.md");
     const changelogJson = await getJavaSdkChangelogJson(
       jarPath,
       groupId,

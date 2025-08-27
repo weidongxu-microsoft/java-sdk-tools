@@ -26,9 +26,9 @@ export async function findAzureSdkRoot(dir: string): Promise<string> {
 async function isAzureSdkRootDir(dir: string): Promise<boolean> {
   // pom.xml, sdk and eng directories are expected at the root of the Azure SDK for Java
   return (
-    (await checkFileExistence(path.join(dir, "pom.xml"))) &&
-    (await checkFileExistence(path.join(dir, "sdk"))) &&
-    (await checkFileExistence(path.join(dir, "eng")))
+    (await checkFileExistence(path.resolve(dir, "pom.xml"))) &&
+    (await checkFileExistence(path.resolve(dir, "sdk"))) &&
+    (await checkFileExistence(path.resolve(dir, "eng")))
   );
 }
 
@@ -37,8 +37,8 @@ export async function findModuleDirectory(dir: string): Promise<string> {
   while (currentDir !== path.dirname(currentDir)) {
     // pom.xml, src directory are expected at the directory of the Azure SDK for Java module
     if (
-      (await checkFileExistence(path.join(currentDir, "pom.xml"))) &&
-      (await checkFileExistence(path.join(currentDir, "src")))
+      (await checkFileExistence(path.resolve(currentDir, "pom.xml"))) &&
+      (await checkFileExistence(path.resolve(currentDir, "src")))
     ) {
       return currentDir;
     }
