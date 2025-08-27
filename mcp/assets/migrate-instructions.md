@@ -48,9 +48,9 @@ Focus on "Breaking Changes" and "Features Added" section.
   ```typespec
   @@clientName(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
   ```
-  If it is an interface, edit "client.tsp", add line
+  If it is an interface, edit "client.tsp", for each operation within this interface, add line
   ```typespec
-  @@clientLocation(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
+  @@clientLocation(<TypeSpecNamespace>.<NewModelName>.<OperationName>, "<ModelName>", "java");
   ```
 
 - Pattern: "<PropertyName>()" was removed, and there is a silimiar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
