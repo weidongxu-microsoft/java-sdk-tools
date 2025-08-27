@@ -27,7 +27,7 @@ Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
 Focus on "Breaking Changes" and "Features Added" section.
 
-- Pattern: "models.###ListResult" / "models.###List" was removed.
+- Pattern: "models.###ListResult" / "models.###ListResponse" / "models.###List" was removed.
   Solution: This is expected, no action needed.
 
 - Pattern: "models.Operation###" was modified / removed.
