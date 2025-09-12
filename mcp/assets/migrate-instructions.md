@@ -13,7 +13,7 @@ Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
 3. Use the #getJavaSdkChangelog tool to retrieve the changelog for the Java SDK, compared to its last stable version. Check the "pom.xml" in "java-sdk" folder for groupId and artifactId.
 
-4. Follow "Guide to mitigate breaks", modify "client.tsp" (add to the end of the file) or "tspconfig.yaml" (add to the block of typespec-java), to mitigate breaks.
+4. Follow "Guide to mitigate breaks", modify "client.tsp" (add to the end of the file) or "tspconfig.yaml" (add to the block of typespec-java), to mitigate breaks. Note that "client.tsp" should import "main.tsp", not vice versa.
 
 5. If there is no change to "client.tsp" or "tspconfig.yaml" in Step 4, then the migration is complete.
 
