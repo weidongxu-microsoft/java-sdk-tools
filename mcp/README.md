@@ -13,7 +13,7 @@ Version: `1.0.0`
     "azure-sdk-java-mcp": {
       "command": "pwsh",
       "args": [
-        "c:/github_lab/java-sdk-tools/mcp/azure-sdk-java-mcp.ps1"
+        "<directory_of_cloned_repository>/mcp/azure-sdk-java-mcp.ps1"
       ],
       "type": "stdio",
       "version": "1.0.0"
