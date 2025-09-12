@@ -25,9 +25,9 @@ Version: `1.0.0`
 
 ## Usage
 
-Use the `#mitigateBreaks` tool in azure-rest-api-specs repository.
+It is recommended to put the "main.tsp" or "client.tsp" in azure-rest-api-specs repository as context. They are the TypeSpec source for the Java SDK.
 
-It is recommended to put the "main.tsp" or "client.tsp" as context. They are the TypeSpec source for the Java SDK.
+Ask agent to "mitigate Java breaking changes from TypeSpec". If agent does not find the right tool, you can use the `#mitigateBreaks` tool directly, and confirm to let agent take actions.
 
 Tips:
 - It may help to disable the "azure-sdk-mcp" tool, if the workspace is in repository root.
