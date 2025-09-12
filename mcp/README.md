@@ -44,11 +44,10 @@ The `generateJavaSdk` tool modifies root "package.json", and generates code in "
 
 ## Prerequisite
 
-Install [Node.js](https://nodejs.org/en/download/) 22 or above. (Verify by running `node --version`)
-
-Install [Java](https://docs.microsoft.com/java/openjdk/download) 11 or above. (Verify by running `java --version`)
-
-Install [Maven](https://maven.apache.org/download.cgi). (Verify by running `mvn --version`)
+- [Node.js](https://nodejs.org/en/download/) 22 or above. (Verify by running `node --version`)
+- [npm-check-updates](https://www.npmjs.com/package/npm-check-updates) installed globally via `npm install -g npm-check-updates`
+- [Java](https://docs.microsoft.com/java/openjdk/download) 11 or above. (Verify by running `javac --version`)
+- [Maven](https://maven.apache.org/download.cgi). (Verify by running `mvn --version`)
 
 ## Overview
 
@@ -86,16 +85,6 @@ This MCP server communicates over stdio and exposes the following tools (only th
 - Start the server using the included PowerShell wrapper (`azure-sdk-java-mcp.ps1`) or run the built Node entrypoint directly.
 - The server communicates via stdio and is intended to be used with MCP-compatible clients (for example, GitHub Copilot or other MCP clients).
 - Tool names are case-sensitive and should be invoked exactly as listed above.
-
-## Prerequisites
-
-- Node.js (v20 or later recommended)
-- A compatible MCP client that can connect over stdio
-- Following npm packages installed globally:
-  - [ncu](https://www.npmjs.com/package/npm-check-updates)
-  - [typespec compiler](https://www.npmjs.com/package/@typespec/compiler)
-  - [tsp-client](https://github.com/Azure/azure-sdk-tools/tree/main/tools/tsp-client)
-- For build-related tools: a working Java/Maven environment when building generated Java SDKs
 
 ## Development
 
