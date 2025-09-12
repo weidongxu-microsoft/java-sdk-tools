@@ -39,6 +39,9 @@ Tips:
       }
     ```
 
+The instruction asks agent to commit the change to "client.tsp" and "tspconfig.yaml".
+The `generateJavaSdk` tool modifies root "package.json", and generates code in "java-sdk" folder. Do not commit these files.
+
 ## Prerequisite
 
 Install [Node.js](https://nodejs.org/en/download/) 22 or above. (Verify by running `node --version`)
