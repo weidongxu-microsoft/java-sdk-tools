@@ -31,7 +31,13 @@ It is recommended to put the "main.tsp" or "client.tsp" as context. They are the
 
 Tips:
 - It may help to disable the "azure-sdk-mcp" tool, if the workspace is in repository root.
-- Choose "Allow in this Workspace" upon Copilot permission request.
+- Let the agent run full-auto, by choose "Allow in this Workspace" upon Copilot permission request, or disable the confirmation altogether.
+    ```json
+      "chat.tools.global.autoApprove": true,
+      "chat.tools.terminal.autoApprove": {
+        "/.*/": true
+      }
+    ```
 
 ## Prerequisite
 
