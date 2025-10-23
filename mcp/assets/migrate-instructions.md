@@ -1,4 +1,4 @@
-# Instruction to migitate breaks for Java SDK after migrate to TypeSpec
+# Instruction to mitigate breaks for Java SDK after migrate to TypeSpec
 
 Only modify "client.tsp" and "tspconfig.yaml". Do not modify any other files.
 For "client.tsp", group the modifications at the end of the file.
@@ -47,7 +47,7 @@ Focus on "Breaking Changes" and "Features Added" section.
   ```
   `<Service Name>` above should contain proper spaces.
 
-- Pattern: "models.<ModelName>" was removed, and there is a silimiar "models.<NewModelName>" was added.
+- Pattern: "models.<ModelName>" was removed, and there is a similar "models.<NewModelName>" was added.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Check in tsp files, whether "<NewModelName>" is a model, or an interface.
   1. If it is a model, edit "client.tsp", add line
@@ -67,7 +67,7 @@ Focus on "Breaking Changes" and "Features Added" section.
       @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<ModelName>", "java");
       ```
 
-- Pattern: "<PropertyName>()" was removed, and there is a silimiar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
+- Pattern: "<PropertyName>()" was removed, and there is a similar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "client.tsp", add line
   ```typespec
