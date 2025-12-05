@@ -36,9 +36,6 @@ Focus on "Breaking Changes" and "Features Added" section.
 - Pattern: "models.Operation###" was modified / removed.
   Solution: This is expected, no action needed.
 
-- Pattern: "validate()" was removed
-  Solution: This is expected, no action needed.
-
 - Pattern: "<Constructor>()" was changed to private access
   Solution: This is expected, no action needed.
 
@@ -78,13 +75,37 @@ Focus on "Breaking Changes" and "Features Added" section.
   ```
 
 - Pattern: "java.lang.Object" -> "java.util.Map"
+  Severity: This is a breaking change that recommended to be fixed.
   Solution: Edit "client.tsp", add line
   ```typespec
   @@alternateType(<TypeSpecNamespace>.<ModelName>.<PropertyName>, unknown, "java");
   ```
 
 - Pattern: "java.lang.Object" -> "com.azure.core.util.BinaryData"
+  Severity: This is a breaking change that recommended to be fixed.
   Solution: Edit "tspconfig.yaml", add line under "@azure-tools/typespec-java"
   ```yaml
     use-object-for-unknown: true
+  ```
+
+
+- Pattern: "validate()" was removed
+  Severity: This is a breaking change that can be accepted.
+  Solution: Edit "tspconfig.yaml", add line under "@azure-tools/typespec-java"
+  ```yaml
+    client-side-validations: true
+  ```
+
+- Pattern: "java.lang.String" -> "java.util.UUID"
+  Severity: This is a breaking change that can be accepted.
+  Solution: Edit "tspconfig.yaml", add line under "@azure-tools/typespec-java"
+  ```yaml
+    uuid-as-string: false
+  ```
+
+- Pattern: "java.lang.Float" -> "java.lang.Double"
+  Severity: This is a breaking change that can be accepted.
+  Solution: Edit "tspconfig.yaml", add line under "@azure-tools/typespec-java"
+  ```yaml
+    float32-as-double: false
   ```
