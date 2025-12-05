@@ -39,6 +39,9 @@ Focus on "Breaking Changes" and "Features Added" section.
 - Pattern: "<Constructor>()" was changed to private access
   Solution: This is expected, no action needed.
 
+- Pattern: "fluent.<ClientName> serviceClient()" -> "fluent.<NewClientName> serviceClient()"
+  Solution: This is expected, no action needed.
+
 - Pattern: "<ServiceName>Manager was removed, and there is a similar "<NewServiceName>Manager" was added.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "tspconfig.yaml", modify or add line under "@azure-tools/typespec-java"
