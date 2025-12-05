@@ -1,4 +1,4 @@
-# Instruction to mitigate breaks for Java SDK after migrate to TypeSpec
+# Instruction to mitigate breaks for Java SDK after migrating to TypeSpec
 
 Only modify "client.tsp" and "tspconfig.yaml". Do not modify any other files.
 For "client.tsp", group the modifications at the end of the file.

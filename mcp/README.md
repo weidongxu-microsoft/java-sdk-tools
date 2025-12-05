@@ -23,15 +23,27 @@ Version: `1.0.0`
 }
 ```
 
+## TypeSpec Migration PR Review
+
+This tool is typically used during TypeSpec Migration PR Review
+
+When reviewing TypeSpec migration PR, and its impact on Java SDK. It is recommended to
+1. Open the `apiview`, compare it with latest GA SDK, review the API in clients. Some of the breaks may be expected, like fixing of pageable or LRO.
+2. Run this tool to mitigate model/property naming, like `URL` -> `Url`, `IP` -> `Ip`, etc.
+3. Review the change made by the tool. Some of the change may "fix" a break, but that break might be the correct thing to do (e.g. service fixing a wrong Swagger definition, usually a wrong type). Do not blindly trust `@@alternateType` added by the tool.
+
 ## Usage
 
-It is recommended to put the "main.tsp" or "client.tsp" in azure-rest-api-specs repository as context. They are the TypeSpec source for the Java SDK.
+It is recommended to put the "main.tsp" or "client.tsp" in "azure-rest-api-specs" repository as context. They are the TypeSpec source for the Java SDK.
+"azure-sdk-for-java" repository is not required.
+
+It is recommended to use coding LLM like GPT5-Codex or Claude.
 
 Ask agent to "mitigate Java breaking changes from TypeSpec". If agent does not find the right tool, you can use the `#mitigateBreaks` tool directly, and confirm to let agent take actions.
 
 Tips:
 - It may help to disable the "azure-sdk-mcp" tool, if the workspace is in repository root.
-- Let the agent run full-auto, by choose "Allow in this Workspace" upon Copilot permission request, or disable the confirmation altogether.
+- Let the agent run full-auto, by choosing "Allow in this Workspace" upon Copilot permission request, or disable the confirmation altogether.
     ```json
       "chat.tools.global.autoApprove": true,
       "chat.tools.terminal.autoApprove": {
