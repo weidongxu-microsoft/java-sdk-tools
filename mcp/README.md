@@ -33,6 +33,7 @@ When reviewing TypeSpec migration PR, and its impact on Java SDK. It is recommen
 
 3. Run this tool to mitigate model/property naming, like `URL` -> `Url`, `IP` -> `Ip`, etc.
 4. Review the change made by the tool. Some of the change may "fix" a break, but that break might be the correct thing to do (e.g. service fixing a wrong Swagger definition, usually a wrong type). Do not blindly trust `@@alternateType` added by the tool.
+5. If things look good, update it in [Validation for for Swagger spec migration to TypeSpec](https://github.com/Azure/autorest.java/issues/3160).
 
 ## Usage
 
