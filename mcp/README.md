@@ -31,9 +31,9 @@ When reviewing TypeSpec migration PR, and its impact on Java SDK. It is recommen
 1. Open the `apiview`, compare it with latest GA SDK, review the API in clients. Some of the breaks may be expected, like fixing of pageable or LRO.
    <img width="1851" height="440" alt="image" src="https://github.com/user-attachments/assets/cdcd64a2-08e1-48c6-9455-b9e2262fd2f9" />
 
-3. Run this tool to mitigate model/property naming, like `URL` -> `Url`, `IP` -> `Ip`, etc.
-4. Review the change made by the tool. Some of the change may "fix" a break, but that break might be the correct thing to do (e.g. service fixing a wrong Swagger definition, usually a wrong type). Do not blindly trust `@@alternateType` added by the tool.
-5. If things look good, update it in [Validation for for Swagger spec migration to TypeSpec](https://github.com/Azure/autorest.java/issues/3160).
+1. Run this tool to mitigate model/property naming, like `URL` -> `Url`, `IP` -> `Ip`, etc.
+1. Review the change made by the tool. Some of the change may "fix" a break, but that break might be the correct thing to do (e.g. service fixing a wrong Swagger definition, usually a wrong type). Do not blindly trust `@@alternateType` added by the tool.
+1. If things look good, update it in [Validation for for Swagger spec migration to TypeSpec](https://github.com/Azure/autorest.java/issues/3160).
 
 ## Usage
 
