@@ -1,1 +1,1 @@
-Refer to the MCP server's README in ./mcp/README.md
+Refer to the MCP server's [README](./mcp/README.md)
