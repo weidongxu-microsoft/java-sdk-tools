@@ -16,12 +16,18 @@ export async function cleanJavaSource(
     };
   }
 
-  await fs.promises.rmdir(`${moduleDirectory}/src/main`, { recursive: true });
-  await fs.promises.rmdir(`${moduleDirectory}/src/samples`, {
+  await fs.promises.rm(`${moduleDirectory}/src/main`, {
     recursive: true,
+    force: true,
   });
-  await fs.promises.rmdir(`${moduleDirectory}/src/test`, { recursive: true });
-
+  await fs.promises.rm(`${moduleDirectory}/src/samples`, {
+    recursive: true,
+    force: true,
+  });
+  await fs.promises.rm(`${moduleDirectory}/src/test`, {
+    recursive: true,
+    force: true,
+  });
   return {
     content: [
       {

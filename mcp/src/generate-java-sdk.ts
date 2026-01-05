@@ -18,15 +18,11 @@ export async function generateJavaSdk(
 
     // Update dependencies to latest
     // This step is to make sure the packages here are compatible with the typespec-java emitter (to be installed in next step)
-    await spawnAsync(
-      "ncu",
-      ["-u"],
-      {
-        cwd: process.cwd(),
-        shell: true,
-        timeout: 600000,
-      },
-    );
+    await spawnAsync("ncu", ["-u"], {
+      cwd: process.cwd(),
+      shell: true,
+      timeout: 600000,
+    });
 
     // Install latest typespec-java emitter
     const installEmitterResult = await spawnAsync(
@@ -62,7 +58,7 @@ export async function generateJavaSdk(
       {
         cwd: process.cwd(),
         shell: true,
-        timeout: 600000,
+        timeout: 2400000,
       },
     );
 
