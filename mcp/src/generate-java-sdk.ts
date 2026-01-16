@@ -58,7 +58,7 @@ export async function generateJavaSdk(
       {
         cwd: process.cwd(),
         shell: true,
-        timeout: 2400000,
+        timeout: 6000000,
       },
     );
 
