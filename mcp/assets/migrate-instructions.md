@@ -25,6 +25,8 @@ Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
 7. Go to Step 1, iterate this process one more time, to see if there are any further changes needed.
 
+8. If no further changes needed, provide a summary of remaining breaks from changelog, group by category.
+
 
 # Guide to mitigate breaks
 
