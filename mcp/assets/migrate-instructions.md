@@ -1,4 +1,4 @@
-# Instruction to mitigate breaks for Java SDK after migrating to TypeSpec
+# Instructions to mitigate breaks for Java SDK after migrating to TypeSpec
 
 Only modify "client.tsp" and "tspconfig.yaml". Do not modify any other files.
 For "client.tsp", group the modifications at the end of the file.
@@ -7,34 +7,34 @@ Do not read ".json" files.
 
 Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
-1. Use the #generateJavaSdk tool to generate Java SDK, based on current TypeSpec.
+1. Use the #generateJavaSdk tool to generate the Java SDK based on the current TypeSpec.
 
-2. Use the #buildJavaSdk tool to build Jar.
+2. Use the #buildJavaSdk tool to build the JAR.
 
-3. Use the #getJavaSdkChangelog tool to retrieve the changelog for the Java SDK, compared to its last stable version. Check the "pom.xml" in "java-sdk" folder for groupId and artifactId.
+3. Use the #getJavaSdkChangelog tool to retrieve the changelog for the Java SDK compared to its last stable version. Check the "pom.xml" in the "java-sdk" folder for the groupId and artifactId.
 
-4. Follow "Guide to mitigate breaks", modify "client.tsp" (add to the end of the file) or "tspconfig.yaml" (add to the block of typespec-java), to mitigate breaks.
-   Note that "client.tsp" should import "main.tsp", not vice versa.
-   Do not modify other files, particularly "back-compatible.tsp".
+4. Follow "Guide to mitigate breaks" and modify "client.tsp" (add to the end of the file) or "tspconfig.yaml" (add to the block for typespec-java) to mitigate breaks.
+  Note that "client.tsp" should import "main.tsp", not vice versa.
+  Do not modify other files, particularly "back-compatible.tsp".
 
 5. If there is no change to "client.tsp" or "tspconfig.yaml" in Step 4, then the migration is complete.
 
-5. Run "tsp compile ." then "tsp format .". If there is an error, try fix "client.tsp".
+6. Run "tsp compile ." and then "tsp format .". If there is an error, try to fix "client.tsp".
 
-6. Use git to commit the changed "client.tsp" or "tspconfig.yaml" file.
+7. Use git to commit the changed "client.tsp" or "tspconfig.yaml" file.
 
-7. Go to Step 1, iterate this process one more time, to see if there are any further changes needed.
+8. Return to Step 1 and iterate this process one more time to see if there are any further changes needed.
 
-8. If no further changes needed, provide a summary of remaining breaks from changelog, group by category.
+9. If no further changes are needed, provide a summary of the remaining breaks from the changelog, grouped by category.
 
 
 # Guide to mitigate breaks
 
-Focus on "Breaking Changes" and "Features Added" section.
+Focus on the "Breaking Changes" and "Features Added" sections.
 
 - Pattern: "models.###Headers" was added.
-  Severity: This is likely an error on TypeSpec source, and likely cause breaks on API. This MUST be reported and investigated by dev.
-  Solution: Try to find the source about this model and operation in tsp. Report to dev to investigate IMMEDIATELY, before mitigate for other breaks.
+  Severity: This is likely an error in the TypeSpec source and likely causes breaks in the API. This MUST be reported and investigated by dev.
+  Solution: Try to find the TypeSpec source for this model and operation. Report to dev to investigate IMMEDIATELY before mitigating other breaks.
 
 - Pattern: "models.###ListResult" / "models.###ListResponse" / "models.###List" was removed.
   Solution: This is expected, no action needed.
@@ -48,7 +48,7 @@ Focus on "Breaking Changes" and "Features Added" section.
 - Pattern: "fluent.<ClientName> serviceClient()" -> "fluent.<NewClientName> serviceClient()"
   Solution: This is expected, no action needed.
 
-- Pattern: "<ServiceName>Manager was removed, and there is a similar "<NewServiceName>Manager" was added.
+- Pattern: "<ServiceName>Manager" was removed, and a similar "<NewServiceName>Manager" was added.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "tspconfig.yaml", modify or add line under "@azure-tools/typespec-java"
   ```yaml
@@ -58,28 +58,28 @@ Focus on "Breaking Changes" and "Features Added" section.
 
 - Pattern: "models.<ModelName>" was removed, and there is a similar "models.<NewModelName>" was added.
   Severity: This is a breaking change that MUST be fixed.
-  Solution: Check in tsp files, whether "<NewModelName>" is a model, or an interface.
-  1. If it is a model, edit "client.tsp", add line
+  Solution: Check the .tsp files to determine whether "<NewModelName>" is a model or an interface.
+  1. If it is a model, edit "client.tsp" and add the line
       ```typespec
       @@clientName(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
       ```
-  2. If it is an interface, edit "client.tsp", for each operation within this interface, add line
+  2. If it is an interface, edit "client.tsp" and for each operation within this interface add the line
       ```typespec
       @@clientLocation(<TypeSpecNamespace>.<NewModelName>.<OperationName>, "<ModelName>", "java");
       ```
-  3. If no model or interface found, check "back-compatible.tsp", search for lines like
+  3. If no model or interface is found, check "back-compatible.tsp" and search for lines like
       ```typespec
       @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<NewModelName>");
       ```
-     If such `@@clientLocation` found in "back-compatible.tsp", edit "client.tsp", for each such line, add line in "client.tsp"
+     If such `@@clientLocation` entries are found in "back-compatible.tsp", edit "client.tsp" and for each such line add
       ```typespec
       @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<ModelName>", "java");
       ```
-     If there is `@@clientLocation` on same operation found in "back-compatible.tsp", exclude "java" from there by adding "!java" to its scope.
+     If there is an `@@clientLocation` on the same operation found in "back-compatible.tsp", exclude "java" from there by adding "!java" to its scope.
 
-- Pattern: "<PropertyName>()" was removed, and there is a similar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
+- Pattern: "<PropertyName>()" was removed, and a similar "<NewPropertyName>()" was added in the same "<ModelName>". It is usually only case changes.
   Severity: This is a breaking change that MUST be fixed.
-  Solution: Edit "client.tsp", add line
+  Solution: Edit "client.tsp" and add the line
   ```typespec
   @@clientName(<TypeSpecNamespace>.<ModelName>.<NewPropertyName>, "<PropertyName>", "java");
   ```
