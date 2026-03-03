@@ -71,6 +71,7 @@ Focus on "Breaking Changes" and "Features Added" section.
       ```typespec
       @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<ModelName>", "java");
       ```
+     If there is `@@clientLocation` on same operation found in "back-compatible.tsp", exclude "java" from there by adding "!java" to its scope.
 
 - Pattern: "<PropertyName>()" was removed, and there is a similar "<NewPropertyName>()" was added, in same "<ModelName>". It is usually only case changes.
   Severity: This is a breaking change that MUST be fixed.
