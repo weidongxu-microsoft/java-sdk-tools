@@ -19,7 +19,7 @@ Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
 5. If there is no change to "client.tsp" or "tspconfig.yaml" in Step 4, then the migration is complete.
 
-5. Run "tsp compile ." then "tsp format .". If there is error, try fix "client.tsp".
+5. Run "tsp compile ." then "tsp format .". If there is an error, try fix "client.tsp".
 
 6. Use git to commit the changed "client.tsp" or "tspconfig.yaml" file.
 
@@ -31,6 +31,10 @@ Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 # Guide to mitigate breaks
 
 Focus on "Breaking Changes" and "Features Added" section.
+
+- Pattern: "models.###Headers" was added.
+  Severity: This is likely an error on TypeSpec source, and likely cause breaks on API. This MUST be reported and investigated by dev.
+  Solution: Try to find the source about this model and operation in tsp. Report to dev to investigate IMMEDIATELY, before mitigate for other breaks.
 
 - Pattern: "models.###ListResult" / "models.###ListResponse" / "models.###List" was removed.
   Solution: This is expected, no action needed.
@@ -81,19 +85,18 @@ Focus on "Breaking Changes" and "Features Added" section.
   ```
 
 - Pattern: "java.lang.Object" -> "java.util.Map"
-  Severity: This is a breaking change that recommended to be fixed.
+  Severity: This is a breaking change that is recommended to be fixed.
   Solution: Edit "client.tsp", add line
   ```typespec
   @@alternateType(<TypeSpecNamespace>.<ModelName>.<PropertyName>, unknown, "java");
   ```
 
 - Pattern: "java.lang.Object" -> "com.azure.core.util.BinaryData"
-  Severity: This is a breaking change that recommended to be fixed.
+  Severity: This is a breaking change that is recommended to be fixed.
   Solution: Edit "tspconfig.yaml", add line under "@azure-tools/typespec-java"
   ```yaml
     use-object-for-unknown: true
   ```
-
 
 - Pattern: "validate()" was removed
   Severity: This is a breaking change that can be accepted.
