@@ -42,53 +42,53 @@ Focus on the "Breaking Changes" and "Features Added" sections.
 - Pattern: "models.Operation###" was modified / removed.
   Solution: This is expected, no action needed.
 
-- Pattern: "<Constructor>()" was changed to private access
+- Pattern: "{Constructor}()" was changed to private access
   Solution: This is expected, no action needed.
 
-- Pattern: "fluent.<ClientName> serviceClient()" -> "fluent.<NewClientName> serviceClient()"
+- Pattern: "fluent.{ClientName} serviceClient()" -> "fluent.{NewClientName} serviceClient()"
   Solution: This is expected, no action needed.
 
-- Pattern: "<ServiceName>Manager" was removed, and a similar "<NewServiceName>Manager" was added.
+- Pattern: "{ServiceName}Manager" was removed, and a similar "{NewServiceName}Manager" was added.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "tspconfig.yaml", modify or add line under "@azure-tools/typespec-java"
   ```yaml
-    service-name: <Service Name>
+    service-name: {Service Name}
   ```
-  `<Service Name>` above should contain proper spaces.
+  `{Service Name}` above should contain proper spaces.
 
-- Pattern: "models.<ModelName>" was removed, and there is a similar "models.<NewModelName>" was added.
+- Pattern: "models.{ModelName}" was removed, and there is a similar "models.{NewModelName}" was added.
   Severity: This is a breaking change that MUST be fixed.
-  Solution: Check the .tsp files to determine whether "<NewModelName>" is a model or an interface.
+  Solution: Check the .tsp files to determine whether "{NewModelName}" is a model or an interface.
   1. If it is a model, edit "client.tsp" and add the line
       ```typespec
-      @@clientName(<TypeSpecNamespace>.<NewModelName>, "<ModelName>", "java");
+      @@clientName({TypeSpecNamespace}.{NewModelName}, "{ModelName}", "java");
       ```
   2. If it is an interface, edit "client.tsp" and for each operation within this interface add the line
       ```typespec
-      @@clientLocation(<TypeSpecNamespace>.<NewModelName>.<OperationName>, "<ModelName>", "java");
+      @@clientLocation({TypeSpecNamespace}.{NewModelName}.{OperationName}, "{ModelName}", "java");
       ```
   3. If no model or interface is found, check "back-compatible.tsp" and search for lines like
       ```typespec
-      @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<NewModelName>");
+      @@clientLocation({TypeSpecNamespace}.{InterfaceName}.{OperationName}, "{NewModelName}");
       ```
      If such `@@clientLocation` entries are found in "back-compatible.tsp", edit "client.tsp" and for each such line add
       ```typespec
-      @@clientLocation(<TypeSpecNamespace>.<InterfaceName>.<OperationName>, "<ModelName>", "java");
+      @@clientLocation({TypeSpecNamespace}.{InterfaceName}.{OperationName}, "{ModelName}", "java");
       ```
      If there is an `@@clientLocation` on the same operation found in "back-compatible.tsp", exclude "java" from there by adding "!java" to its scope.
 
-- Pattern: "<PropertyName>()" was removed, and a similar "<NewPropertyName>()" was added in the same "<ModelName>". It is usually only case changes.
+- Pattern: "{PropertyName}()" was removed, and a similar "{NewPropertyName}()" was added in the same "{ModelName}". It is usually only case changes.
   Severity: This is a breaking change that MUST be fixed.
   Solution: Edit "client.tsp" and add the line
   ```typespec
-  @@clientName(<TypeSpecNamespace>.<ModelName>.<NewPropertyName>, "<PropertyName>", "java");
+  @@clientName({TypeSpecNamespace}.{ModelName}.{NewPropertyName}, "{PropertyName}", "java");
   ```
 
 - Pattern: "java.lang.Object" -> "java.util.Map"
   Severity: This is a breaking change that is recommended to be fixed.
   Solution: Edit "client.tsp", add line
   ```typespec
-  @@alternateType(<TypeSpecNamespace>.<ModelName>.<PropertyName>, unknown, "java");
+  @@alternateType({TypeSpecNamespace}.{ModelName}.{PropertyName}, unknown, "java");
   ```
 
 - Pattern: "java.lang.Object" -> "com.azure.core.util.BinaryData"
