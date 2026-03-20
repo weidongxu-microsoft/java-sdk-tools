@@ -9,6 +9,8 @@ Follow the instructions below to migrate the Java SDK to generate from TypeSpec.
 
 1. Use the #generateJavaSdk tool to generate the Java SDK based on the current TypeSpec.
 
+   When generate SDK fails with "duplicate-client-name" error, use `@@clientName({model}, "{deduplicated-model-name}", "java")` to rename a model.
+
 2. Use the #buildJavaSdk tool to build the JAR.
 
 3. Use the #getJavaSdkChangelog tool to retrieve the changelog for the Java SDK compared to its last stable version. Check the "pom.xml" in the "java-sdk" folder for the groupId and artifactId.
